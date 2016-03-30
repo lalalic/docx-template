@@ -1,0 +1,42 @@
+{
+  "name": "docx-hub",
+  "description": "personalized docx with data",
+  "version": "0.0.1",
+  "author": {
+    "name": "Raymond Li",
+    "email": "lalalic@139.com"
+  },
+  "keywords": [
+    "docx",
+    "personalized"
+  ],
+  "license": "GPL",
+  "readme": "README.md",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/lalalic/docx-hub.git"
+  },
+  "devDependencies": {
+    "babelify": "^6.0.2",
+    "gulp": "^3.9.0",
+    "gulp-shell": "^0.5.1",
+    "jasmine": "^2.2.1",
+    "watchify": "^3.6.1"
+  },
+  "dependencies": {
+    "docx4js": "^0.11.0"
+  },
+  "browserify": {
+    "transform": [
+      [
+        "babelify",
+        {
+          "stage": 1
+        }
+      ]
+    ]
+  },
+  "main": "main.js",
+  "browser": "browser.js",
+  "scripts": {}
+}
