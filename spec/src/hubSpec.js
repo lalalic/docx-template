@@ -1,5 +1,6 @@
-import DocxHub from "../main"
+import DocxHub from "../../lib"
 import docx4js from "docx4js"
+import newDocx from "./newDocx"
 
 describe("docxhub", function(){
     it("can assemble with data", function(){

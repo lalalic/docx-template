@@ -7,6 +7,6 @@ export default class ControlIf extends Control{
 
     static test(wordModel){
         var tag=wordModel.getTag()
-        return tag.substring(0,3)==='if(' && tag.charAt(tag.length-1)=')'
+        return tag.substring(0,3)==='if(' && tag.charAt(tag.length-1)==')'
     }
 }

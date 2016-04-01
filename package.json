@@ -17,14 +17,18 @@
     "url": "https://github.com/lalalic/docx-hub.git"
   },
   "devDependencies": {
+    "babel-core": "^6.7.4",
+    "babel-register": "^6.7.2",
     "babelify": "^6.0.2",
     "gulp": "^3.9.0",
     "gulp-shell": "^0.5.1",
     "jasmine": "^2.2.1",
+    "jszip": "^2.6.0",
     "watchify": "^3.6.1"
   },
   "dependencies": {
-    "docx4js": "^0.11.0"
+    "babel": "^5.6.14",
+    "docx4js": "^1.0.1"
   },
   "browserify": {
     "transform": [
@@ -36,7 +40,7 @@
       ]
     ]
   },
-  "main": "main.js",
-  "browser": "browser.js",
+  "main": "lib/index.js",
+  "browser": "lib/browser.js",
   "scripts": {}
 }

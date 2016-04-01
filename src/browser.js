@@ -1,10 +1,10 @@
-var Docx4js=require("docx4js"),
-    Assembler=require("./lib/assembler"),
-    ControlIf=require("./lib/controlIf"),
-    ControlFor=require("./lib/controlFor"),
-    ControlVar=require("./lib/controlVar")
+import Docx4js from "docx4js"
+import Assembler from "./lib/assembler"
+import ControlIf from "./lib/controlIf"
+import ControlFor from "./lib/controlFor"
+import ControlVar from "./lib/controlVar"
 
-module.exports={
+export default {
     createFactory(){
         return Docx4js.createVisitorFactory(function(wordModel,parentAssembler){
             if(wordModel.type==='control.richtext'){
