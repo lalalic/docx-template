@@ -5,7 +5,7 @@ import newDocx from "./newDocx"
 describe("docxhub", function(){
     it("can assemble with data", function(){
         DocxHub.assemble(""/*docx4js load file*/,{}/*data*/).then(function(assembled){
-            assembled.save(""/* */)
+            assembled.save()
             assembled.release()
         })
     })
@@ -14,7 +14,7 @@ describe("docxhub", function(){
         let factory=DocxHub.createFactory()
         docx4js.load("").then(function(docx){
             let assembled=docx.parse(factory)
-            assembled.save("")
+            assembled.save()
             assembled.release()
         })
     })

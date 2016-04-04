@@ -1,16 +1,18 @@
 "use strict";
 
-var _controlIf = require("../../lib/controlIf");
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
 
-var _controlIf2 = _interopRequireDefault(_controlIf);
+var _libControlIf = require("../../lib/controlIf");
 
-var _controlFor = require("../../lib/controlFor");
+var _libControlIf2 = _interopRequireDefault(_libControlIf);
 
-var _controlFor2 = _interopRequireDefault(_controlFor);
+var _libControlFor = require("../../lib/controlFor");
 
-var _controlVar = require("../../lib/controlVar");
+var _libControlFor2 = _interopRequireDefault(_libControlFor);
 
-var _controlVar2 = _interopRequireDefault(_controlVar);
+var _libControlVar = require("../../lib/controlVar");
+
+var _libControlVar2 = _interopRequireDefault(_libControlVar);
 
 var _newDocx = require("./newDocx");
 
@@ -20,29 +22,60 @@ var _docx4js = require("docx4js");
 
 var _docx4js2 = _interopRequireDefault(_docx4js);
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+describe("models", function () {
+    describe("identification", function () {
+        function identify(content, Model, done) {
+            _docx4js2["default"].load((0, _newDocx2["default"])(content)).then(function (docx) {
+                var a = { visit: function visit(a) {
+                        return 1;
+                    } },
+                    found = false;
+                docx.parse(_docx4js2["default"].createVisitorFactory(function (wordModel) {
+                    if (wordModel.type == 'documentStyles') return null;
+                    if (wordModel.type == 'control.richtext') if (Model.test(wordModel)) found = true;
+                    return a;
+                }));
+                if (!found) fail();
+                done();
+            })["catch"](function (e) {
+                return done(fail(e));
+            });
+        }
 
-function identify(content, Model, done) {
-    _docx4js2.default.load((0, _newDocx2.default)(content)).then(function (docx) {
-        docx.parse(_docx4js2.default.createVisistorFactory(function (wordModel) {
-            if (wordModel.type == 'control.richtext') if (Model.test(wordModel)) done();
-        }));
-        fail();
-        done();
-    });
-}
+        it("can identify if control: if(.*)", function (done) {
+            identify(contents['if'], _libControlIf2["default"], done);
+        });
 
-describe("identify models", function () {
-    it("can identify if control: if(.*)", function (done) {
-        identify("\n            <w:sdt>\n    \t\t\t<w:sdtPr>\n    \t\t\t\t<w:alias w:val=\"a==1\"/>\n    \t\t\t\t<w:tag w:val=\"if(a==1)\"/>\n    \t\t\t\t<w:id w:val=\"922459404\"/>\n    \t\t\t\t<w:placeholder>\n    \t\t\t\t\t<w:docPart w:val=\"DefaultPlaceholder_1082065158\"/>\n    \t\t\t\t</w:placeholder>\n    \t\t\t</w:sdtPr>\n    \t\t\t<w:sdtEndPr/>\n    \t\t\t<w:sdtContent>\n                    <w:p>\n    \t\t\t\t\t<w:r>\n    \t\t\t\t\t\t<w:t>hello.</w:t>\n    \t\t\t\t\t</w:r>\n    \t\t\t\t</w:p>\n                </w:sdtContent>\n    \t\t</w:sdt>", _controlIf2.default, done);
+        it("can identify for control:for(var i=10;i>0;i--)", function (done) {
+            identify(contents['for'], _libControlFor2["default"], done);
+        });
+
+        it("can identify variable control", function (done) {
+            identify(contents['var'], _libControlVar2["default"], done);
+        });
     });
 
-    it("can identify for control:for(var i=10;i>0;i--)", function (done) {
-        identify("\n            <w:sdt>\n    \t\t\t<w:sdtPr>\n    \t\t\t\t<w:alias w:val=\"loop 10 times\"/>\n    \t\t\t\t<w:tag w:val=\"for(var i=10;i>0;i--)\"/>\n    \t\t\t\t<w:id w:val=\"922459404\"/>\n    \t\t\t\t<w:placeholder>\n    \t\t\t\t\t<w:docPart w:val=\"DefaultPlaceholder_1082065158\"/>\n    \t\t\t\t</w:placeholder>\n    \t\t\t</w:sdtPr>\n    \t\t\t<w:sdtEndPr/>\n    \t\t\t<w:sdtContent>\n                    <w:p>\n    \t\t\t\t\t<w:r>\n    \t\t\t\t\t\t<w:t>hello.</w:t>\n    \t\t\t\t\t</w:r>\n    \t\t\t\t</w:p>\n                </w:sdtContent>\n    \t\t</w:sdt>", _controlFor2.default, done);
+    xdescribe("assembly", function () {
+        function assemble(content, Model, data, done) {
+            done();
+        }
+        it("if()", function (done) {
+            assemble(contents['if'], _libControlIf2["default"], {}, done);
+        });
+
+        it("for()", function (done) {
+            assemble(contents['for'], _libControlFor2["default"], {}, done);
+        });
+
+        it("${}", function (done) {
+            assemble(contents['for'], _libControlVar2["default"], {}, done);
+        });
     });
 
-    it("can identify variable control", function (done) {
-        identify("\n            <w:sdt>\n    \t\t\t<w:sdtPr>\n    \t\t\t\t<w:id w:val=\"922459404\"/>\n    \t\t\t\t<w:placeholder>\n    \t\t\t\t\t<w:docPart w:val=\"DefaultPlaceholder_1082065158\"/>\n    \t\t\t\t</w:placeholder>\n    \t\t\t</w:sdtPr>\n    \t\t\t<w:sdtEndPr/>\n    \t\t\t<w:sdtContent>\n                    <w:p>\n    \t\t\t\t\t<w:r>\n    \t\t\t\t\t\t<w:t>" + name + "</w:t>\n    \t\t\t\t\t</w:r>\n    \t\t\t\t</w:p>\n                </w:sdtContent>\n    \t\t</w:sdt>", _controlVar2.default, done);
-    });
+    var contents = {
+        "if": "\n            <w:sdt>\n                <w:sdtPr>\n                    <w:alias w:val=\"a==1\"/>\n                    <w:tag w:val=\"if(a==1)\"/>\n                    <w:id w:val=\"922459404\"/>\n                    <w:placeholder>\n                        <w:docPart w:val=\"DefaultPlaceholder_1082065158\"/>\n                    </w:placeholder>\n                </w:sdtPr>\n                <w:sdtEndPr/>\n                <w:sdtContent>\n                    <w:p>\n                        <w:r>\n                            <w:t>hello.</w:t>\n                        </w:r>\n                    </w:p>\n                </w:sdtContent>\n            </w:sdt>",
+        "for": "\n            <w:sdt>\n                <w:sdtPr>\n                    <w:alias w:val=\"loop 10 times\"/>\n                    <w:tag w:val=\"for(var i=10;i>0;i--)\"/>\n                    <w:id w:val=\"922459404\"/>\n                    <w:placeholder>\n                        <w:docPart w:val=\"DefaultPlaceholder_1082065158\"/>\n                    </w:placeholder>\n                </w:sdtPr>\n                <w:sdtEndPr/>\n                <w:sdtContent>\n                    <w:p>\n                        <w:r>\n                            <w:t>hello.</w:t>\n                        </w:r>\n                    </w:p>\n                </w:sdtContent>\n            </w:sdt>",
+        "var": "\n            <w:sdt>\n                <w:sdtPr>\n                    <w:id w:val=\"922459404\"/>\n                    <w:placeholder>\n                        <w:docPart w:val=\"DefaultPlaceholder_1082065158\"/>\n                    </w:placeholder>\n                </w:sdtPr>\n                <w:sdtEndPr/>\n                <w:sdtContent>\n                    <w:p>\n                        <w:r>\n                            <w:t>" + "${name}" + "</w:t>\n                        </w:r>\n                    </w:p>\n                </w:sdtContent>\n            </w:sdt>"
+    };
 });
-//# sourceMappingURL=C:\work\workspace\docx-hub\spec\fixture\modelSpec.js.map
+//# sourceMappingURL=modelSpec.js.map

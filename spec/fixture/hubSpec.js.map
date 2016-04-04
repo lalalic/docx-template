@@ -1,9 +1,1 @@
-)]}
-{
- "version": 3,
- "sources": "C:\\work\\workspace\\docx-hub\\spec\\src\\hubSpec.js",
- "file": "C:\\work\\workspace\\docx-hub\\spec\\fixture\\hubSpec.js",
- "sourceRoot": "",
- "names": [],
- "mappings": ";;AAAA;;;;AACA;;;;AACA;;;;;;AAEA,SAAS,SAAT,EAAoB,YAAU;AAC1B,OAAG,wBAAH,EAA6B,YAAU;AACnC,sBAAQ,QAAR,CAAiB,wBAAjB,EAAyC,WAAzC,EAAqD,IAArD,CAA0D,UAAS,SAAT,EAAmB;AACzE,sBAAU,IAAV,CAAe,QAAf,EADyE;AAEzE,sBAAU,OAAV,GAFyE;SAAnB,CAA1D,CADmC;KAAV,CAA7B,CAD0B;;AAQ1B,OAAG,uCAAH,EAA4C,YAAU;AAClD,YAAI,UAAQ,cAAQ,aAAR,EAAR,CAD8C;AAElD,0BAAQ,IAAR,CAAa,EAAb,EAAiB,IAAjB,CAAsB,UAAS,IAAT,EAAc;AAChC,gBAAI,YAAU,KAAK,KAAL,CAAW,OAAX,CAAV,CAD4B;AAEhC,sBAAU,IAAV,CAAe,EAAf,EAFgC;AAGhC,sBAAU,OAAV,GAHgC;SAAd,CAAtB,CAFkD;KAAV,CAA5C,CAR0B;CAAV,CAApB"
-}
+{"version":3,"sources":["../src/hubSpec.js"],"names":[],"mappings":";;;;mBAAoB,WAAW;;;;uBACX,SAAS;;;;uBACT,WAAW;;;;AAE/B,QAAQ,CAAC,SAAS,EAAE,YAAU;AAC1B,MAAE,CAAC,wBAAwB,EAAE,YAAU;AACnC,yBAAQ,QAAQ,CAAC,EAAE,uBAAsB,EAAE,UAAS,CAAC,IAAI,CAAC,UAAS,SAAS,EAAC;AACzE,qBAAS,CAAC,IAAI,EAAE,CAAA;AAChB,qBAAS,CAAC,OAAO,EAAE,CAAA;SACtB,CAAC,CAAA;KACL,CAAC,CAAA;;AAEF,MAAE,CAAC,uCAAuC,EAAE,YAAU;AAClD,YAAI,OAAO,GAAC,iBAAQ,aAAa,EAAE,CAAA;AACnC,6BAAQ,IAAI,CAAC,EAAE,CAAC,CAAC,IAAI,CAAC,UAAS,IAAI,EAAC;AAChC,gBAAI,SAAS,GAAC,IAAI,CAAC,KAAK,CAAC,OAAO,CAAC,CAAA;AACjC,qBAAS,CAAC,IAAI,EAAE,CAAA;AAChB,qBAAS,CAAC,OAAO,EAAE,CAAA;SACtB,CAAC,CAAA;KACL,CAAC,CAAA;CACL,CAAC,CAAA","file":"hubSpec.js","sourcesContent":["import DocxHub from \"../../lib\"\r\nimport docx4js from \"docx4js\"\r\nimport newDocx from \"./newDocx\"\r\n\r\ndescribe(\"docxhub\", function(){\r\n    it(\"can assemble with data\", function(){\r\n        DocxHub.assemble(\"\"/*docx4js load file*/,{}/*data*/).then(function(assembled){\r\n            assembled.save()\r\n            assembled.release()\r\n        })\r\n    })\r\n\r\n    it(\"can create factory for advanced usage\", function(){\r\n        let factory=DocxHub.createFactory()\r\n        docx4js.load(\"\").then(function(docx){\r\n            let assembled=docx.parse(factory)\r\n            assembled.save()\r\n            assembled.release()\r\n        })\r\n    })\r\n})\r\n"]}

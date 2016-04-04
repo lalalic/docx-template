@@ -3,28 +3,26 @@
 Object.defineProperty(exports, "__esModule", {
 				value: true
 });
+exports["default"] = newDocx;
 
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
-
-exports.default = newDocx;
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
 
 var _jszip = require("jszip");
 
 var _jszip2 = _interopRequireDefault(_jszip);
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
 function newDocx() {
 				var content = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
 
 				if (typeof content == 'string') content = { "word/document.xml": content };
-				var zip = new _jszip2.default();
+				var zip = new _jszip2["default"]();
 
 				content = content || {};
 
 				for (var key in DOCX) {
+								if (!DOCX.hasOwnProperty(key)) continue;
 								var defaultValue = DOCX[key],
-								    defaultType = typeof defaultValue === "undefined" ? "undefined" : _typeof(defaultValue);
+								    defaultType = typeof defaultValue;
 
 								var value = content[key];
 								var finalValue = "<a/>";
@@ -35,9 +33,13 @@ function newDocx() {
 								zip.file(key, finalValue);
 				}
 
-				var blob = zip.generate({ type: "blob", mimeType: "application/docx", compression: "DEFLATE" });
-				blob.name = "a.docx";
-				return blob;
+				if (_jszip2["default"].support.nodebuffer) {
+								return zip.generate({ type: "nodebuffer" });
+				} else {
+								var blob = zip.generate({ type: "blob", mimeType: "application/docx", compression: "DEFLATE" });
+								blob.name = "a.docx";
+								return blob;
+				}
 }
 
 var DOCX = {
@@ -65,4 +67,5 @@ var DOCX = {
 				"word/fontTable.xml": false,
 				"docProps/app.xml": false
 };
-//# sourceMappingURL=C:\work\workspace\docx-hub\spec\fixture\newDocx.js.map
+module.exports = exports["default"];
+//# sourceMappingURL=newDocx.js.map

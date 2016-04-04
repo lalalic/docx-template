@@ -9,6 +9,8 @@ export default function newDocx(content={}){
     content=content||{}
 
     for(var key in DOCX){
+        if(!DOCX.hasOwnProperty(key))
+            continue;
         let defaultValue=DOCX[key]
             ,defaultType=typeof(defaultValue)
 
@@ -27,9 +29,13 @@ export default function newDocx(content={}){
         zip.file(key,finalValue)
     }
 
-    var blob=zip.generate({type:"blob", mimeType: "application/docx", compression: "DEFLATE"})
-    blob.name="a.docx"
-    return blob
+    if(JSZip.support.nodebuffer){
+        return zip.generate({type:"nodebuffer"})
+    }else{
+        var blob=zip.generate({type:"blob", mimeType: "application/docx", compression: "DEFLATE"})
+        blob.name="a.docx"
+        return blob
+    }
 }
 
 var  DOCX={
