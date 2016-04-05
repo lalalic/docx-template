@@ -1,1 +1,0 @@
-{"version":3,"sources":["../src/index.js"],"names":[],"mappings":";;;;;;;;uBAAgB,WAAW","file":"index.js","sourcesContent":["import Hub from './browser'\r\nexport default Hub\r\n"]}
