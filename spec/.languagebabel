@@ -1,6 +1,0 @@
-{
-
-  "babelTranspilePath":               "fixture",
-  "babelMapsPath":                     "fixture", 
-  "projectRoot":                      true
-}

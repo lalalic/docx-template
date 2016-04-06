@@ -15,7 +15,7 @@ module.exports = function(config) {
 
     // list of files / patterns to load in the browser
     files: [
-        'spec/src/**/*Spec.js'
+        'spec/**/modelSpec.js'
     ],
 
 
@@ -27,20 +27,17 @@ module.exports = function(config) {
     // preprocess matching files before serving them to the browser
     // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
     preprocessors: {
-        'spec/src/**/*Spec.js': ['browserify']
+        'spec/**/*Spec.js': ['browserify']
     },
 
-    browserify:{
-        debug:true,
-        transform: [
-          [
-            "babelify",
-            {
-              "stage": 1
-            }
-          ]
-        ]
-    },
+    browserify: {
+		"transform": [
+		  [
+			"redirectify", {"dist":"lib"}
+		  ]
+		],
+		debug:true
+	  },
 
     // test results reporter to use
     // possible values: 'dots', 'progress'
