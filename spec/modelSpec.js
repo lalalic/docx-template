@@ -5,6 +5,7 @@ var docx4js=require( "docx4js"), Any=docx4js.Visitor
 var newDocx=require( "docx4js/spec/newDocx")
 
 describe("models", ()=>{
+    debugger
     describe("identification", function(){
         function identify(content, Model, done){
             docx4js.load(newDocx(content)).then(docx=>{
