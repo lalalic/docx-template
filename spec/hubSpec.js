@@ -1,21 +1,21 @@
-import DocxHub from "../../lib"
+import DocxHub from "../dist"
 import docx4js from "docx4js"
 import newDocx from "docx4js/spec/newDocx"
 
 describe("docxhub", function(){
-    it("can assemble with data", function(){
-        DocxHub.assemble(""/*docx4js load file*/,{}/*data*/).then(function(assembled){
-            assembled.save()
-            assembled.release()
-        })
+	let template="./test/template.zip"
+	
+    it("can parse docx with variants", function(done){
+        DocxHub.parse(template,).then(function(variantDocx){
+            expect(varientDocx).toBeDefined()
+			done()
+        }).catch(e=>{
+			fail(e)
+			done()
+		})
     })
-
-    it("can create factory for advanced usage", function(){
-        let factory=DocxHub.createFactory()
-        docx4js.load("").then(function(docx){
-            let assembled=docx.parse(factory)
-            assembled.save()
-            assembled.release()
-        })
+	
+	it("can assemble with data")
+	
     })
 })

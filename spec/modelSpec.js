@@ -4,9 +4,8 @@ var ControlIf=require( "../dist/controlIf")
 var docx4js=require( "docx4js"), Any=docx4js.Visitor
 var newDocx=require( "docx4js/spec/newDocx")
 
-describe("models", ()=>{
-    debugger
-    describe("identification", function(){
+describe("docx-hub", function(){
+    describe("parser", function(){
         function identify(content, Model, done){
             docx4js.load(newDocx(content)).then(docx=>{
                 var a={visit:a=>1}, found=false
@@ -37,21 +36,12 @@ describe("models", ()=>{
         })
     })
 
-    xdescribe("assembly", ()=>{
-        function assemble(content, Model, data, done){
-            done()
-        }
-        it("if()", done=>{
-            assemble(contents['if'], ControlIf,{},done)
-        })
-
-        it("for()", done=>{
-            assemble(contents['for'],ControlFor, {},done)
-        })
-
-        it("${}", done=>{
-            assemble(contents['for'],ControlVar,{},done)
-        })
+    describe("assembly", function(){
+        it("can assemble template with variable)")
+		
+		it("can assemble template with if(*)")
+			
+		it("can assemble template with ")
     })
 
     var contents={
