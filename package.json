@@ -33,7 +33,8 @@
     "jszip": "^2.6.0"
   },
   "dependencies": {
-    "docx4js": "^1.2.3"
+    "docx4js": "^1.2.4",
+    "esprima": "^2.7.2"
   },
   "browserify": {
     "transform": [

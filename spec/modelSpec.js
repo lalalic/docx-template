@@ -1,47 +1,31 @@
-var ControlFor=require("../dist/controlFor")
-var ControlVar=require( "../dist/controlVar")
-var ControlIf=require( "../dist/controlIf")
-var docx4js=require( "docx4js"), Any=docx4js.Visitor
+var docx4js=require("docx4js")
 var newDocx=require( "docx4js/spec/newDocx")
 
 describe("docx-hub", function(){
     describe("parser", function(){
-        function identify(content, Model, done){
+        function identify(content, model, done){
             docx4js.load(newDocx(content)).then(docx=>{
-                var a={visit:a=>1}, found=false
+                var ignore={visit(){}}
                 docx.parse(docx4js.createVisitorFactory(function(wordModel){
-                    if(wordModel.type=='documentStyles')
-                        return null
-                    if(wordModel.type=='control.richtext')
-                        if (Model.test(wordModel))
-                            found=true
-                    return a
+					if(wordModel.type==model)
+						done()
+					else
+						return ignore
                 }))
-                if(!found)
-                    fail()
-                done()
             }).catch(e=>done(fail(e)))
         }
 
         it("can identify if control: if(.*)", function(done){
-			identify(contents['if'],ControlIf,done)
+			identify(contents['if'],"variant.if",done)
         })
 
         it("can identify for control:for(var i=10;i>0;i--)", function(done){
-            identify(contents['for'],ControlFor,done)
+            identify(contents['for'],"variant.for",done)
         })
 
         it("can identify variable control", function(done){
-            identify(contents['var'],ControlVar,done)
+            identify(contents['var'],"variant.var",done)
         })
-    })
-
-    describe("assembly", function(){
-        it("can assemble template with variable)")
-		
-		it("can assemble template with if(*)")
-			
-		it("can assemble template with ")
     })
 
     var contents={
