@@ -23,8 +23,8 @@ describe("docx-hub", function(){
             identify(contents['for'],"variant.for",done)
         })
 
-        it("can identify variable control", function(done){
-            identify(contents['var'],"variant.var",done)
+        it("can identify expression control", function(done){
+            identify(contents['var'],"variant.exp",done)
         })
     })
 

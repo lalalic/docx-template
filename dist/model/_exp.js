@@ -18,19 +18,18 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-var Variable = function (_Variant) {
-	_inherits(Variable, _Variant);
+var Expression = function (_Variant) {
+	_inherits(Expression, _Variant);
 
-	function Variable() {
-		_classCallCheck(this, Variable);
+	function Expression() {
+		_classCallCheck(this, Expression);
 
-		return _possibleConstructorReturn(this, Object.getPrototypeOf(Variable).apply(this, arguments));
+		return _possibleConstructorReturn(this, Object.getPrototypeOf(Expression).apply(this, arguments));
 	}
 
-	_createClass(Variable, [{
+	_createClass(Expression, [{
 		key: "assemble",
 		value: function assemble() {
-			debugger;
 			var iPara = {},
 			    code = this.toJavascript(iPara);
 			var value = new Function("data", code)(iPara) || '';
@@ -46,13 +45,13 @@ var Variable = function (_Variant) {
 	}], [{
 		key: "type",
 		get: function get() {
-			return "variant.var";
+			return "variant.exp";
 		}
 	}]);
 
-	return Variable;
+	return Expression;
 }(_variant2.default);
 
-exports.default = Variable;
+exports.default = Expression;
 module.exports = exports['default'];
-//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIi4uLy4uL2xpYi9tb2RlbC9fdmFyLmpzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiI7Ozs7Ozs7O0FBQUE7Ozs7Ozs7Ozs7OztJQUVxQjs7Ozs7Ozs7Ozs7NkJBR1Y7QUFDVCxZQURTO0FBRVQsT0FBSSxRQUFNLEVBQU47T0FBVSxPQUFLLEtBQUssWUFBTCxDQUFrQixLQUFsQixDQUFMLENBRkw7QUFHVCxPQUFJLFFBQU0sSUFBSSxRQUFKLENBQWEsTUFBYixFQUFvQixJQUFwQixFQUEwQixLQUExQixLQUFrQyxFQUFsQyxDQUhEO0FBSVQsUUFBSyxJQUFMLENBQVUsQ0FBVixDQUFZLEdBQVosRUFBaUIsT0FBakIsQ0FBeUIsVUFBQyxDQUFELEVBQUcsQ0FBSCxFQUFPO0FBQy9CLFFBQUcsS0FBRyxDQUFILEVBQ0YsRUFBRSxXQUFGLEdBQWMsS0FBZCxDQURELEtBR0MsRUFBRSxNQUFGLEdBSEQ7SUFEd0IsQ0FBekIsQ0FKUzs7OzsrQkFZRyxPQUFNO0FBQ2xCLFVBQVUsS0FBSyxhQUFMLENBQW1CLFlBQW5CLENBQWdDLEtBQWhDLGdCQUFnRCxLQUFLLElBQUwsQ0FEeEM7Ozs7c0JBZEY7QUFBQyxVQUFNLGFBQU4sQ0FBRDs7OztRQURHIiwiZmlsZSI6Il92YXIuanMiLCJzb3VyY2VzQ29udGVudCI6WyJpbXBvcnQgVmFyaWFudCBmcm9tIFwiLi92YXJpYW50XCJcclxuXHJcbmV4cG9ydCBkZWZhdWx0IGNsYXNzIFZhcmlhYmxlIGV4dGVuZHMgVmFyaWFudHtcclxuXHRzdGF0aWMgZ2V0IHR5cGUoKXtyZXR1cm5cInZhcmlhbnQudmFyXCJ9XHJcblxyXG5cdGFzc2VtYmxlKCl7XHJcblx0XHRkZWJ1Z2dlclxyXG5cdFx0dmFyIGlQYXJhPXt9LCBjb2RlPXRoaXMudG9KYXZhc2NyaXB0KGlQYXJhKVxyXG5cdFx0dmFyIHZhbHVlPW5ldyBGdW5jdGlvbihcImRhdGFcIixjb2RlKShpUGFyYSl8fCcnXHJcblx0XHR0aGlzLndYbWwuJCgndCcpLmZvckVhY2goKHQsaSk9PntcclxuXHRcdFx0aWYoaT09MClcclxuXHRcdFx0XHR0LnRleHRDb250ZW50PXZhbHVlXHJcblx0XHRcdGVsc2VcclxuXHRcdFx0XHR0LnJlbW92ZSgpXHJcblx0XHR9KVxyXG5cdH1cclxuXHJcblx0dG9KYXZhc2NyaXB0KGlQYXJhKXtcclxuXHRcdHJldHVybiBgJHt0aGlzLnZhcmlhbnRQYXJlbnQudG9KYXZhc2NyaXB0KGlQYXJhKX1yZXR1cm4gJHt0aGlzLmNvZGV9YFxyXG5cdH1cclxufVxyXG4iXX0=
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIi4uLy4uL2xpYi9tb2RlbC9fZXhwLmpzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiI7Ozs7Ozs7O0FBQUE7Ozs7Ozs7Ozs7OztJQUVxQjs7Ozs7Ozs7Ozs7NkJBR1Y7QUFDVCxPQUFJLFFBQU0sRUFBTjtPQUFVLE9BQUssS0FBSyxZQUFMLENBQWtCLEtBQWxCLENBQUwsQ0FETDtBQUVULE9BQUksUUFBTSxJQUFJLFFBQUosQ0FBYSxNQUFiLEVBQW9CLElBQXBCLEVBQTBCLEtBQTFCLEtBQWtDLEVBQWxDLENBRkQ7QUFHVCxRQUFLLElBQUwsQ0FBVSxDQUFWLENBQVksR0FBWixFQUFpQixPQUFqQixDQUF5QixVQUFDLENBQUQsRUFBRyxDQUFILEVBQU87QUFDL0IsUUFBRyxLQUFHLENBQUgsRUFDRixFQUFFLFdBQUYsR0FBYyxLQUFkLENBREQsS0FHQyxFQUFFLE1BQUYsR0FIRDtJQUR3QixDQUF6QixDQUhTOzs7OytCQVdHLE9BQU07QUFDbEIsVUFBVSxLQUFLLGFBQUwsQ0FBbUIsWUFBbkIsQ0FBZ0MsS0FBaEMsZ0JBQWdELEtBQUssSUFBTCxDQUR4Qzs7OztzQkFiRjtBQUFDLFVBQU0sYUFBTixDQUFEOzs7O1FBREciLCJmaWxlIjoiX2V4cC5qcyIsInNvdXJjZXNDb250ZW50IjpbImltcG9ydCBWYXJpYW50IGZyb20gXCIuL3ZhcmlhbnRcIlxyXG5cclxuZXhwb3J0IGRlZmF1bHQgY2xhc3MgRXhwcmVzc2lvbiBleHRlbmRzIFZhcmlhbnR7XHJcblx0c3RhdGljIGdldCB0eXBlKCl7cmV0dXJuXCJ2YXJpYW50LmV4cFwifVxyXG5cclxuXHRhc3NlbWJsZSgpe1xyXG5cdFx0dmFyIGlQYXJhPXt9LCBjb2RlPXRoaXMudG9KYXZhc2NyaXB0KGlQYXJhKVxyXG5cdFx0dmFyIHZhbHVlPW5ldyBGdW5jdGlvbihcImRhdGFcIixjb2RlKShpUGFyYSl8fCcnXHJcblx0XHR0aGlzLndYbWwuJCgndCcpLmZvckVhY2goKHQsaSk9PntcclxuXHRcdFx0aWYoaT09MClcclxuXHRcdFx0XHR0LnRleHRDb250ZW50PXZhbHVlXHJcblx0XHRcdGVsc2VcclxuXHRcdFx0XHR0LnJlbW92ZSgpXHJcblx0XHR9KVxyXG5cdH1cclxuXHJcblx0dG9KYXZhc2NyaXB0KGlQYXJhKXtcclxuXHRcdHJldHVybiBgJHt0aGlzLnZhcmlhbnRQYXJlbnQudG9KYXZhc2NyaXB0KGlQYXJhKX1yZXR1cm4gJHt0aGlzLmNvZGV9YFxyXG5cdH1cclxufVxyXG4iXX0=

@@ -17,7 +17,7 @@ describe("docxhub", function(){
 					done
 				})
 			}
-			it("variable",done=>check(contents['var'],'variant.var',done))
+			it("expression",done=>check(contents['var'],'variant.exp',done))
 
 			it("if", done=>check(contents['if'](),'variant.if',done))
 
@@ -42,7 +42,7 @@ describe("docxhub", function(){
 				})
 			}
 
-			it("variable",done=>check(contents['var'],'variant.var',done))
+			it("expression",done=>check(contents['var'],'variant.exp',done))
 
 			it("if", done=>check(contents['if'](),'variant.if',done))
 
@@ -65,7 +65,7 @@ describe("docxhub", function(){
 				})
 			}
 
-			it("variable",done=>check(contents['var'],'variant.var',done))
+			it("expression",done=>check(contents['var'],'variant.exp',done))
 
 			it("if", done=>check(contents['if'](),'variant.if',done))
 
@@ -148,7 +148,7 @@ describe("docxhub", function(){
 					done
 				})
 			}
-			it("variable",done=>check(contents['var'](),'variant.var',{name:"abc"}, done, assembledVariant=>{
+			it("expression",done=>check(contents['var'](),'variant.exp',{name:"abc"}, done, assembledVariant=>{
 				expect(assembledVariant.wXml.$1('t').textContent=="abc")
 			}))
 
@@ -274,7 +274,7 @@ describe("docxhub", function(){
 				})
 			}
 
-			it("variable",done=>check(contents['var'](),'variant.var',{name:"abc"}, done, a=>{
+			it("expression",done=>check(contents['var'](),'variant.exp',{name:"abc"}, done, a=>{
 				expect(a.wXml.$1('t').textContent).toBe("abc")
 			}))
 
@@ -363,7 +363,7 @@ describe("docxhub", function(){
 				})
 			}
 
-			it("variable",done=>check(contents['var'](),'variant.var',{name:"abc"}, done, a=>{
+			it("expression",done=>check(contents['var'](),'variant.exp',{name:"abc"}, done, a=>{
 				expect(a.wXml.$1('t').textContent).toBe("abc")
 			}))
 
@@ -381,20 +381,21 @@ describe("docxhub", function(){
 
 			}))
 
-			fit("for", done=>{
+			it("for", done=>{
 				var data={
 					a:["a","b","c"],
 					c:{
 						b:["z","y"]
 					}
 				}
-				var varContent=contents['var']("${i}.${b[k]}.${a[j]}")
+				var varContent=contents['var']("${`${i}.${b[k]}.${a[j]}`}")
 				var loop3=contents['for'](varContent,"var k=0,b=c.b,klen=b.length;k&lt;klen;k++")
 				var loop2=contents['for'](loop3,"var j=0,jlen=a.length;j&lt;jlen;j++")
-
 				check(loop2,'variant.for',data,done, a=>{
-					//expect(a.wXml.$1('t').textContent).toBe("0.z.a")
-
+					let texts=a.wXml.parentNode.$('t')
+					expect(texts.length).toBe(18)
+					expect(texts[0].textContent).toBe("0.z.a")
+					expect(texts[17].textContent).toBe("2.y.c")
 				})
 			})
 
