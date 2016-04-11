@@ -1,5 +1,7 @@
-import newDocx from "docx4js/spec/newDocx"
-import DocxHub from "../dist"
+"use strict";
+
+var newDocx=require("docx4js/spec/newDocx")
+var DocxHub=require("../dist")
 
 describe("docxhub", function(){
 	describe("can parse template for", function(){
@@ -29,7 +31,7 @@ describe("docxhub", function(){
 		describe("nested if", function(){
 			function check(content, model, done){
 				DocxHub.parse(newDocx(contents['if'](content))).then(variantDocx=>{
-					let _if=variantDocx.variantChildren[0]
+					var _if=variantDocx.variantChildren[0]
 					if(_if.type=="variant.if" && _if.variantChildren[0].type==model){
 						done()
 					}else{
@@ -52,7 +54,7 @@ describe("docxhub", function(){
 		describe("nested for", function(){
 			function check(content, model, done){
 				DocxHub.parse(newDocx(contents['for'](content))).then(variantDocx=>{
-					let _for=variantDocx.variantChildren[0]
+					var _for=variantDocx.variantChildren[0]
 					if(_for.type=="variant.for" && _for.variantChildren[0].type==model){
 						done()
 					}else{
@@ -260,7 +262,7 @@ describe("docxhub", function(){
 		describe("nested if", function(){
 			function check(content, model, data, done, moreExpect){
 				DocxHub.assemble(newDocx(contents['if'](content)),data).then(variantDocx=>{
-					let _if=variantDocx.variantChildren[0]
+					var _if=variantDocx.variantChildren[0]
 					if(_if.type=="variant.if" && _if.variantChildren[0].type==model){
 						moreExpect(_if.variantChildren[0])
 						done()
@@ -348,7 +350,7 @@ describe("docxhub", function(){
 		describe("nested for", function(){
 			function check(content, model, data, done, moreExpect){
 				DocxHub.assemble(newDocx(contents['for'](content)),data).then(variantDocx=>{
-					let _if=variantDocx.variantChildren[0]
+					var _if=variantDocx.variantChildren[0]
 					expect(_if.variantChildren.length).toBe(3)
 					if(_if.type=="variant.for" && _if.variantChildren[0].type==model){
 						moreExpect(_if.variantChildren[0])
@@ -392,7 +394,7 @@ describe("docxhub", function(){
 				var loop3=contents['for'](varContent,"var k=0,b=c.b,klen=b.length;k&lt;klen;k++")
 				var loop2=contents['for'](loop3,"var j=0,jlen=a.length;j&lt;jlen;j++")
 				check(loop2,'variant.for',data,done, a=>{
-					let texts=a.wXml.parentNode.$('t')
+					var texts=a.wXml.parentNode.$('t')
 					expect(texts.length).toBe(18)
 					expect(texts[0].textContent).toBe("0.z.a")
 					expect(texts[17].textContent).toBe("2.y.c")
