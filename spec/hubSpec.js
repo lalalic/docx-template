@@ -1,7 +1,7 @@
 "use strict";
 
 var newDocx=require("docx4js/spec/newDocx")
-var DocxHub=require("../dist")
+var DocxHub=require("../lib")
 
 describe("docxhub", function(){
 	describe("can parse template for", function(){

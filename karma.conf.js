@@ -30,14 +30,7 @@ module.exports = function(config) {
         'spec/**/*Spec.js': ['browserify']
     },
 
-    browserify: {
-		"transform": [
-		  [
-			"redirectify", {"dist":"lib"}
-		  ]
-		],
-		debug:true
-	  },
+    browserify: {debug:true},
 
     // test results reporter to use
     // possible values: 'dots', 'progress'

@@ -1,4 +1,4 @@
-require("../dist")
+require("../lib")
 
 var docx4js=require("docx4js")
 var newDocx=require( "docx4js/spec/newDocx")
