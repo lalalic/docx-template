@@ -23,7 +23,6 @@
     "browserify": "^13.0.0",
     "jasmine": "^2.2.1",
     "jasmine-core": "^2.4.1",
-    "jszip": "^2.6.0",
     "karma": "^0.13.22",
     "karma-browserify": "^5.0.3",
     "karma-chrome-launcher": "^0.2.3",
@@ -31,7 +30,7 @@
     "watchify": ">=3.0.0 <4.0.0"
   },
   "dependencies": {
-	"jszip": ">=2.4.0",  
+	"jszip": ">=2.4.0",
     "docx4js": "^1.2.4",
     "esprima": "^2.7.2"
   },
@@ -46,8 +45,8 @@
   "main": "dist/",
   "scripts": {
     "build": "babel src -d lib --source-maps inline",
-    "dist": "watchify -v -d -r ./dist:docx-hub -o dist/docx-hub.debug.js",
-    "prepublish": "browserify -g uglifyify -r ./dist:docx-hub -o dist/docx-hub.min.js",
+    "dist": "watchify -v -d -r ./dist:docx-hub -o dist/index.js",
+    "prepublish": "browserify -g uglifyify -r ./dist:docx-hub -o dist/index.min.js",
     "test": "jasmine",
     "test.debug": "node --debug-brk .jasmine.js",
     "karma": "karma start"
