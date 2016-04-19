@@ -4,7 +4,6 @@ export default class If extends Variant{
 	static get type(){return"variant.if"}
 
 	assemble(){
-		debugger
 		var iPara={}, code=this._toJavascript(iPara)
 		var satified=new Function("data",`${code} return true`)(iPara)
 		if(!satified){

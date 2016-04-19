@@ -136,10 +136,10 @@ describe("docxhub", function(){
 	describe("can assemble with data for", function(){
 		describe("root", function(){
 			function check(content, model, data, done, moreExpect){
-				DocxHub.assemble(newDocx(content), data).then(variantDocx=>{
-					expect(variantDocx.variantChildren.length).toBeGreaterThan(0)
-					if(variantDocx.variantChildren[0].type==model){
-						moreExpect(variantDocx.variantChildren[0])
+				DocxHub.assemble(newDocx(content), data).then(docx=>{
+					expect(docx.variantChildren.length).toBeGreaterThan(0)
+					if(docx.variantChildren[0].type==model){
+						moreExpect(docx.variantChildren[0])
 						done()
 					}else{
 						fail()

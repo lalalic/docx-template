@@ -31,6 +31,8 @@ Object.assign(docx4js.factory,{
 	}
 })
 
+
+
 function createFactory(data){
 	let ignore={visit(){}}
 	return docx4js.createVisitorFactory(function(wordModel){
@@ -56,7 +58,7 @@ export default {
 
     assemble(file,data){
         return docx4js.load(file).then(docx=>{
-            return docx.parse(createFactory(data))
+            return docx.parse(createFactory(data)).asStaticDocx()
         })
     }
 }

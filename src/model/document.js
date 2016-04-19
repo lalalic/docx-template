@@ -54,6 +54,11 @@ export default class Document extends BaseDocument{
 	parse(){
 		var r=super.parse(...arguments)
 		this.wDoc.endVariant(this)
+		if(this.wDoc.data && this.variantChildren.length){
+			this.wDoc.partMain.change=true
+			this.wDoc.partMain.save()
+		}
+			
 		delete this.wDoc.data
 		return r
 	}
@@ -84,4 +89,58 @@ export default class Document extends BaseDocument{
 		
 		return new Function("data", code)(data)
 	}
+	
+	asStaticDocx(){
+		this.wDoc.variantChildren=this.variantChildren
+		let wDoc=this.wDoc
+		
+		return Object.assign(this.wDoc,{
+			save(file){
+				var buffer=wDoc.raw.generate({type:"nodebuffer"})
+				var fs="fs"
+				require(fs).writeFile(file,buffer)
+			},
+			download(file){
+				var file=wDoc.raw.generate({type: "blob",mimeType: "application/docx"})
+				var url = window.URL.createObjectURL(file);
+				var link = document.createElement("a");
+				document.body.appendChild(link)
+				link.download = `${file||wDoc.props.name||'new'}.docx`;
+				link.href = url;
+				link.click()
+				document.body.removeChild(link)
+			}
+		})
+	}
+	
+	/**
+	* public API for variant docx
+	*/
+	assemble(data){
+		
+	}
 }
+
+import Part from "docx4js/lib/openxml/part"
+
+var xmldom="xmldom";
+(function(XMLSerializer){
+	Object.assign(Part.prototype,{
+		changed:false,
+		save(){
+			if(this.changed){
+				this.doc.raw.file(this.name, `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\r\n${(new XMLSerializer()).serializeToString(this.documentElement)}`)
+				this.changed=false
+			}
+			
+		},
+		
+		addRel(){
+			
+		},
+		
+		removeRel(){
+			
+		}
+	})	
+})($.isNode ? require(xmldom).XMLSerializer : XMLSerializer)
