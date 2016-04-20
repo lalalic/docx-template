@@ -1,19 +1,37 @@
 import BaseDocument from "docx4js/lib/openxml/docx/model/document"
 import esprima from "esprima"
 
+function callee(name){
+	return {
+		"type": "ExpressionStatement",
+		"expression": {
+			"type": "CallExpression",
+			"callee": {
+				"type": "Identifier",
+				"name": name
+			},
+			"arguments": []
+		}
+	}
+}
+
 export default class Document extends BaseDocument{
 	constructor(){
 		super(...arguments)
 		Object.assign(this.wDoc,function(variantDocument){
 			let _currentContainer,
-				_variantContainers=[]
+				_variantContainers=[],
+				variantParams={}
 			return {
 					beginVariant(variant){
+						let fname='assemble_'
 						switch(variant.type){
 						case 'variant.exp':
 							variant.variantParent=_currentContainer
 							_currentContainer.variantChildren.push(variant)
-							_currentContainer.codeBlock.push(variant.parsedCode)
+							fname="assemble_"+variant.vId
+							_currentContainer.codeBlock.push(callee(fname))
+							variantParams[fname]=variant.assemble.bind(variant)
 						break
 						case 'variant.if':
 						case 'variant.for':
@@ -21,6 +39,10 @@ export default class Document extends BaseDocument{
 							_currentContainer.variantChildren.push(variant)
 							_variantContainers.push(_currentContainer)
 							_currentContainer.codeBlock.push(variant.parsedCode)
+							
+							fname="assemble_"+variant.vId
+							variant.codeBlock.push(callee(fname))
+							variantParams[fname]=variant.assemble.bind(variant)
 						case 'document':
 							_currentContainer=variant
 						}
@@ -33,7 +55,9 @@ export default class Document extends BaseDocument{
 						case 'variant.for':
 							_currentContainer=_variantContainers.pop()
 						}
-					}
+					},
+					
+					variantParams
 			}
 		}(this))
 
