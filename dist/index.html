@@ -4,13 +4,20 @@
 	<script src="index.js"></script>
 	<script>
 		function test(input){
-			require("docx-hub").assemble(input.files[0],{}).then(function(assembled){
+			var d=data.value.trim()
+			if(d.length==0)
+				d="{}"
+			require("docx-hub").assemble(input.files[0],JSON.parse(d)).then(function(assembled){
 				assembled.download()
+				document.body.querySelector('input').value=""
 			})
 		}
 	</script>
 </head>
 <body>
 	<input type="file" style="position:absolute;top:0" onchange="test(this)">
+	<br/>
+	<br/>
+	<textarea placeholder="json data for assembly" id="data" style="width:98%;height:200px"></textarea>
 </body>
 </html>

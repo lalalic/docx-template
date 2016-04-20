@@ -4,6 +4,7 @@ import Document from "./model/document"
 import Expression from "./model/_exp"
 import If from "./model/_if"
 import For from "./model/_for"
+import esprima from "esprima"
 
 Object.assign(docx4js.factory,{
 	extendControl(type,wXml,doc,parent){
@@ -14,10 +15,20 @@ Object.assign(docx4js.factory,{
 			tag=tagEl && tagEl.attr('w:val') || false
 
 		if(tag){
-			if(tag.substring(0, 4) === 'for(' && tag.charAt(tag.length - 1) == ')'){
-				return new For(wXml,doc,parent,tag.substring(4,tag.length-1))
-			}else if(tag.substring(0, 3) === 'if(' && tag.charAt(tag.length - 1) == ')'){
-				return new If(wXml,doc,parent,tag.substring(3,tag.length-1))
+			try{
+				let parsedCode=esprima.parse(tag+'{}')
+				let [firstStatement]=parsedCode.body
+				switch(firstStatement.type){
+				case 'ForStatement':
+					return new For(wXml,doc,parent,tag.substring(4,tag.length-1), parsedCode)
+				break
+				case 'IfStatement':
+					return new If(wXml,doc,parent,tag.substring(3,tag.length-1), parsedCode)
+				break
+				}
+			}catch(e){
+				//console.error(`error ${this.type} code:${this.code}`)
+				//throw e
 			}
 		}else{
 			let text = wXml.textContent.trim()

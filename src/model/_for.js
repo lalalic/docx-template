@@ -8,18 +8,26 @@ export default class For extends Variant{
 
 	constructor(){
 		super(...arguments)
+		
 		this.codeDefVars=[]
-		var [varDecl]=this.parsedCode.body
-		if(varDecl&&varDecl.type=='VariableDeclaration'){
-			varDecl.declarations.forEach(def=>{
+		
+		var {init, test, update}=this.parsedCode.body[0]
+		if(init&&init.type=='VariableDeclaration'){
+			init.declarations.forEach(def=>{
 				this.codeDefVars.push(def.id.name)
 			})
 		}
 		this.stacks=[]
 	}
+	
+	_initVariant(){
+		this.codeBlock=this.parsedCode.body[0].body.body
+		while(!Array.isArray(this.codeBlock))
+			this.codeBlock=this.codeBlock.body
+		super._initVariant()
+	}
 
 	assemble(){
-		debugger
 		var iPara={}, scope=this.variantParent._toJavascript(iPara)
 		var setVariables=[]
 		this.codeDefVars.forEach(a=>{
@@ -64,6 +72,7 @@ export default class For extends Variant{
 		}
 
 		this.stacks=[]
+		super.assemble(...arguments)
 	}
 
 	_toJavascript(iPara){

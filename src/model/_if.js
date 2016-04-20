@@ -2,6 +2,12 @@ import Variant from "./variant"
 
 export default class If extends Variant{
 	static get type(){return"variant.if"}
+	_initVariant(){
+		this.codeBlock=this.parsedCode.body[0].consequent.body
+		while(!Array.isArray(this.codeBlock))//if()with(){}
+			this.codeBlock=this.codeBlock.body
+		super._initVariant()
+	}
 
 	assemble(){
 		var iPara={}, code=this._toJavascript(iPara)
@@ -11,6 +17,7 @@ export default class If extends Variant{
 			while(content.lastChild)
 				content.removeChild(content.lastChild)
 		}
+		super.assemble(...arguments)
 	}
 	_toJavascript(iPara){
 		return `${this.variantParent._toJavascript(iPara)} if(${this.code})`

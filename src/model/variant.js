@@ -1,16 +1,13 @@
 import RichText from "docx4js/lib/openxml/docx/model/control/richtext"
 import esprima from "esprima"
 
+var id=Date.now()
 export default class Variant extends RichText{
 	constructor(){
 		super(...arguments)
+		this.vId=id++
 		this.code=arguments[3]
-		try{
-			this.parsedCode=esprima.parse(this.code)//for validation
-		}catch(e){
-			console.error(`error ${this.type} code:${this.code}`)
-			throw e
-		}
+		this.parsedCode=arguments[4]
 		this._initVariant()
 	}
 
@@ -36,7 +33,7 @@ export default class Variant extends RichText{
 	* assemble the variant Word model with data to a static word model 
 	*/
 	assemble(){
-
+		this.wDoc.parseContext.part.current.setChanged(true)
 	}
 
 	/**

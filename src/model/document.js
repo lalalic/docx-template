@@ -1,4 +1,5 @@
 import BaseDocument from "docx4js/lib/openxml/docx/model/document"
+import esprima from "esprima"
 
 export default class Document extends BaseDocument{
 	constructor(){
@@ -12,12 +13,14 @@ export default class Document extends BaseDocument{
 						case 'variant.exp':
 							variant.variantParent=_currentContainer
 							_currentContainer.variantChildren.push(variant)
+							_currentContainer.codeBlock.push(variant.parsedCode)
 						break
 						case 'variant.if':
 						case 'variant.for':
 							variant.variantParent=_currentContainer
 							_currentContainer.variantChildren.push(variant)
 							_variantContainers.push(_currentContainer)
+							_currentContainer.codeBlock.push(variant.parsedCode)
 						case 'document':
 							_currentContainer=variant
 						}
@@ -36,7 +39,8 @@ export default class Document extends BaseDocument{
 
 		this.variantParent=null
 		this.variantChildren=[]
-
+		this.parsedCode=esprima.parse("with(arguments[0]){}")
+		this.codeBlock=this.parsedCode.body[0].body.body
 		this.wDoc.beginVariant(this)
 	}
 
@@ -54,11 +58,6 @@ export default class Document extends BaseDocument{
 	parse(){
 		var r=super.parse(...arguments)
 		this.wDoc.endVariant(this)
-		if(this.wDoc.data && this.variantChildren.length){
-			this.wDoc.partMain.change=true
-			this.wDoc.partMain.save()
-		}
-			
 		delete this.wDoc.data
 		return r
 	}
@@ -66,10 +65,12 @@ export default class Document extends BaseDocument{
 	visit(){
 		//which makes the class as a visitor
 	}
+	
+	
 
 	_toJavascript(iPara){
 		iPara._global=this.wDoc.data
-		return `with(arguments[0]._global)`
+		return `console.info(JSON.stringify(arguments[0]));with(arguments[0]._global)`
 	}
 	
 	_toJavascriptOfAssembleAsData(){
@@ -96,13 +97,15 @@ export default class Document extends BaseDocument{
 		
 		return Object.assign(this.wDoc,{
 			save(file){
+				wDoc._serialize()
 				var buffer=wDoc.raw.generate({type:"nodebuffer"})
 				var fs="fs"
 				require(fs).writeFile(file,buffer)
 			},
 			download(file){
-				var file=wDoc.raw.generate({type: "blob",mimeType: "application/docx"})
-				var url = window.URL.createObjectURL(file);
+				wDoc._serialize()
+				var data=wDoc.raw.generate({type: "blob",mimeType: "application/docx"})
+				var url = window.URL.createObjectURL(data);
 				var link = document.createElement("a");
 				document.body.appendChild(link)
 				link.download = `${file||wDoc.props.name||'new'}.docx`;
@@ -121,26 +124,46 @@ export default class Document extends BaseDocument{
 	}
 }
 
+import DocxDocument from "docx4js"
 import Part from "docx4js/lib/openxml/part"
 
 var xmldom="xmldom";
 (function(XMLSerializer){
 	Object.assign(Part.prototype,{
-		changed:false,
-		save(){
-			if(this.changed){
-				this.doc.raw.file(this.name, `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\r\n${(new XMLSerializer()).serializeToString(this.documentElement)}`)
-				this.changed=false
-			}
+		setChanged(a){
+			var {_changedParts=new Set()}=this.doc
+			this.doc._changedParts=_changedParts
 			
+			_changedParts[a ? 'add' : 'remove'](this)
+		},
+		_serialize(){
+			this.doc.raw.file(this.name, `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\r\n${(new XMLSerializer()).serializeToString(this.documentElement)}`)
 		},
 		
-		addRel(){
-			
+		addRel(rel){
+			var id=`rId${Math.max(Object.keys(this.rels).map(a=>parseInt(a.substring(3))))+1}`
+			this.rels[id]=rel
+			var el=this.documentElement.createElement('Relationship')
+			el.setAttribute("Id",id)
+			Object.keys(rel).forEach(a=>el.setAttribute(a,rel[a]))
+			this.documentElement.appendChild(el)
+			this.doc.getPart(this.relName).setChanged(true)
 		},
 		
-		removeRel(){
-			
+		removeRel(id){
+			delete this.rels[id]
+			this.documentElement.$1(`Relationship[Id=${id}]`).remove()
+			this.doc.getPart(this.relName).setChanged(true)
 		}
-	})	
+	})
+	
+	Object.assign(DocxDocument.prototype,{
+		_serialize(){
+			var {_changedParts}=this
+			if(_changedParts){
+				_changedParts.forEach(part=>part._serialize())
+				delete this._changedParts
+			}
+		}
+	})
 })($.isNode ? require(xmldom).XMLSerializer : XMLSerializer)

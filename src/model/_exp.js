@@ -2,6 +2,7 @@ import Variant from "./variant"
 
 export default class Expression extends Variant{
 	static get type(){return"variant.exp"}
+	
 
 	assemble(){
 		var iPara={}, code=this._toJavascript(iPara)
@@ -12,6 +13,7 @@ export default class Expression extends Variant{
 			else
 				t.remove()
 		})
+		super.assemble(...arguments)
 	}
 
 	_toJavascript(iPara){
