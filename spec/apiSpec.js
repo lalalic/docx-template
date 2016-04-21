@@ -44,8 +44,9 @@ describe("docx hub", ()=>{
 			let docx=this.docx
 			expect(!!docx.download).toBe(true)
 			
-			let jszip=require('jszip')
+			let jszip=require('jszip'), link=document.createElement('span')
 			spyOn(docx.raw,'generate').and.callThrough()
+			spyOn(document,'createElement').and.returnValue(link)
 			docx.download()
 			expect(docx.raw.generate).toHaveBeenCalled()
 		})

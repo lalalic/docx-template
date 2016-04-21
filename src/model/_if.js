@@ -6,6 +6,24 @@ export default class If extends Variant{
 		this.codeBlock=this.parsedCode.body[0].consequent.body
 		while(!Array.isArray(this.codeBlock))//if()with(){}
 			this.codeBlock=this.codeBlock.body
+		
+		this.parsedCode.body[0].alternate={
+			"type": "ExpressionStatement",
+			"expression": {
+				"type": "CallExpression",
+				"callee": {
+					"type": "Identifier",
+					"name": "assemble_"+this.vId
+				},
+				"arguments": [
+					{
+						"type": "Literal",
+						"value": false,
+						"raw": "false"
+					}
+				]
+			}
+		}
 		super._initVariant()
 	}
 

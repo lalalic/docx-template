@@ -1,5 +1,6 @@
 import BaseDocument from "docx4js/lib/openxml/docx/model/document"
 import esprima from "esprima"
+import escodegen from "escodegen"
 
 function callee(name){
 	return {
@@ -82,7 +83,15 @@ export default class Document extends BaseDocument{
 	parse(){
 		var r=super.parse(...arguments)
 		this.wDoc.endVariant(this)
-		delete this.wDoc.data
+
+		this.variantChildren.map(variant=>{
+			variant.rawXml=variant.wXml
+			variant.wXml=variant.wXml.cloneNode(true)
+		})
+		
+		if(typeof(this.parsedCode)!='function')
+			this.parsedCode=new Function("data,option",escodegen.generate(this.parsedCode))
+
 		return r
 	}
 
@@ -144,6 +153,7 @@ export default class Document extends BaseDocument{
 	* public API for variant docx
 	*/
 	assemble(data){
+		
 		
 	}
 }
