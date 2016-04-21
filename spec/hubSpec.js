@@ -139,7 +139,7 @@ describe("docxhub", function(){
 				DocxHub.assemble(newDocx(content), data).then(docx=>{
 					expect(docx.variantChildren.length).toBeGreaterThan(0)
 					if(docx.variantChildren[0].type==model){
-						moreExpect(docx.variantChildren[0])
+						moreExpect(docx.variantChildren[0],docx)
 						done()
 					}else{
 						fail()
@@ -150,8 +150,12 @@ describe("docxhub", function(){
 					done
 				})
 			}
-			it("expression",done=>check(contents['var'](),'variant.exp',{name:"abc"}, done, assembledVariant=>{
+			it("expression",done=>check(contents['var'](),'variant.exp',{name:"abc"}, done, (assembledVariant,docx)=>{
 				expect(assembledVariant.assembledXml.$1('t').textContent=="abc")
+				let Part=require("docx4js/lib/openxml/part")
+				spyOn(Part.prototype,"_serialize").and.callThrough()
+				docx.save()
+				expect(Part.prototype._serialize).toHaveBeenCalled()
 			}))
 
 			describe("if", function(){
