@@ -32,8 +32,10 @@ Object.assign(docx4js.factory,{
 			}
 		}else{
 			let text = wXml.textContent.trim()
-			if(text.charAt(0) == '$' && text.charAt(1) == '{' && text.charAt(text.length - 1) == '}')
-				return new Expression(wXml,doc,parent,text.substring(2,text.length-1))
+			if(text.charAt(0) == '$' && text.charAt(1) == '{' && text.charAt(text.length - 1) == '}'){
+				let exp=text.substring(2,text.length-1)
+				return new Expression(wXml,doc,parent,exp, esprima.parse(exp))
+			}
 		}
 	},
 	extend(wXml){
@@ -44,12 +46,11 @@ Object.assign(docx4js.factory,{
 
 
 
-function createFactory(data){
+function createFactory(){
 	let ignore={visit(){}}
 	return docx4js.createVisitorFactory(function(wordModel){
 		switch(wordModel.type){
 		case 'document':
-			wordModel.data=data
 		case 'variant.exp':
 		case 'variant.for':
 		case 'variant.if':
@@ -63,13 +64,19 @@ function createFactory(data){
 export default {
     parse(file){
         return docx4js.load(file).then(docx=>{
-            return docx.parse(createFactory())
+			var document=docx.parse(createFactory())
+            return {
+					assemble(data,transactional){
+						return document.assemble(data,transactional)
+					},
+					variantChildren: document.variantChildren
+				}
         })
     },
 
     assemble(file,data){
         return docx4js.load(file).then(docx=>{
-            return docx.parse(createFactory(data)).asStaticDocx()
+            return docx.parse(createFactory()).assemble(data,true)
         })
     }
 }

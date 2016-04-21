@@ -8,7 +8,7 @@
 			if(d.length==0)
 				d="{}"
 			require("docx-hub").assemble(input.files[0],JSON.parse(d)).then(function(assembled){
-				assembled.download()
+				assembled.save()
 				document.body.querySelector('input').value=""
 			})
 		}

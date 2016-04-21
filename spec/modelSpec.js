@@ -5,7 +5,7 @@ var newDocx=require( "docx4js/spec/newDocx")
 
 
 describe("docx-hub", function(){
-    describe("parser", function(){
+   describe("parser", function(){
         function identify(content, model, done){
 			docx4js.load(newDocx(content)).then(docx=>{
                 var ignore={visit(){}}

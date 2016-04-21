@@ -151,40 +151,40 @@ describe("docxhub", function(){
 				})
 			}
 			it("expression",done=>check(contents['var'](),'variant.exp',{name:"abc"}, done, assembledVariant=>{
-				expect(assembledVariant.wXml.$1('t').textContent=="abc")
+				expect(assembledVariant.assembledXml.$1('t').textContent=="abc")
 			}))
 
 			describe("if", function(){
 				it("if(true)", done=>check(contents['if']("true"),'variant.if',{},done, assembledVariant=>{
-					expect(assembledVariant.wXml.$1('sdtContent').childNodes.length).toBeGreaterThan(0)
+					expect(assembledVariant.assembledXml.$1('sdtContent').childNodes.length).toBeGreaterThan(0)
 				}))
 
 				it("if(name=='abc')", done=>check(contents['if']("name='abc'"),'variant.if',{name:"abc"},done, assembledVariant=>{
-					expect(assembledVariant.wXml.$1('sdtContent').childNodes.length).toBeGreaterThan(0)
+					expect(assembledVariant.assembledXml.$1('sdtContent').childNodes.length).toBeGreaterThan(0)
 				}))
 
 				it("if(false)", done=>check(contents['if']("false"),'variant.if',{},done, assembledVariant=>{
-					expect(assembledVariant.wXml.$1('sdtContent').childNodes.length).toBe(0)
+					expect(!!assembledVariant.assembledXml).toBe(false)
 				}))
 
 				it("if(name=='abcd')", done=>check(contents['if']("name=='abcd'"),'variant.if',{name:"abc"},done, assembledVariant=>{
-					expect(assembledVariant.wXml.$1('sdtContent').childNodes.length).toBe(0)
+					expect(!!assembledVariant.assembledXml).toBe(false)
 				}))
 			})
 
 			describe("for", function(){
 				it("for(var i=0;i<10;i++)", done=>check(contents['for']("var i=0;i&lt;10;i++"),'variant.for',{},done, assembledVariant=>{
-					expect(assembledVariant.wXml.$('p').length).toBe(10)
+					expect(assembledVariant.assembledXml.$('p').length).toBe(10)
 				}))
 
 				it("for(var i=0, len=types.length;i<len;i++)", done=>
 					check(contents['for']("var i=0,len=types.length;i &lt; len;i++"),'variant.for',{types:["a","b"]},done, assembledVariant=>{
-						expect(assembledVariant.wXml.$('p').length).toBe(2)
+						expect(assembledVariant.assembledXml.$('p').length).toBe(2)
 				}))
 
 				it("for(var i=0, len=types.length;i<len;i++): ${name}", done=>
 					check(contents['for']("var i=0,len=types.length;i &lt; len;i++",contents['var']()),'variant.for',{types:["a","b"],name:"hello"},done, assembledVariant=>{
-						var ps=assembledVariant.wXml.$('p')
+						var ps=assembledVariant.assembledXml.$('p')
 						expect(ps.length).toBe(2)
 						expect(ps[0].textContent.trim()).toBe("hello")
 						expect(ps[1].textContent.trim()).toBe("hello")
@@ -192,7 +192,7 @@ describe("docxhub", function(){
 
 				it("for(var i=0, len=types.length;i<len;i++): ${types[i]}", done=>
 					check(contents['for']("var i=0,len=types.length;i &lt; len;i++",contents['var']('${types[i]}')),'variant.for',{types:["a","b"],name:"hello"},done, assembledVariant=>{
-						var ps=assembledVariant.wXml.$('p')
+						var ps=assembledVariant.assembledXml.$('p')
 						expect(ps.length).toBe(2)
 						expect(ps[0].textContent.trim()).toBe("a")
 						expect(ps[1].textContent.trim()).toBe("b")
@@ -264,7 +264,7 @@ describe("docxhub", function(){
 				DocxHub.assemble(newDocx(contents['if'](content)),data).then(variantDocx=>{
 					var _if=variantDocx.variantChildren[0]
 					if(_if.type=="variant.if" && _if.variantChildren[0].type==model){
-						moreExpect(_if.variantChildren[0])
+						moreExpect(_if.assembledXml)
 						done()
 					}else{
 						fail()
@@ -277,15 +277,15 @@ describe("docxhub", function(){
 			}
 
 			it("expression",done=>check(contents['var'](),'variant.exp',{name:"abc"}, done, a=>{
-				expect(a.wXml.$1('t').textContent).toBe("abc")
+				expect(a.$1('t').textContent).toBe("abc")
 			}))
 
 			it("if", done=>check(contents['if'](),'variant.if',{}, done,a=>{
-				expect(a.wXml.$1('t').textContent).toBe("hello.")
+				expect(a.$1('t').textContent).toBe("hello.")
 			}))
 
 			it("for", done=>check(contents['for']("var i=0;i&lt;3;i++"),'variant.for',{},done, a=>{
-				expect(a.wXml.$('p').length).toBe(3)
+				expect(a.$('p').length).toBe(3)
 			}))
 
 			let contents={
@@ -350,10 +350,9 @@ describe("docxhub", function(){
 		describe("nested for", function(){
 			function check(content, model, data, done, moreExpect){
 				DocxHub.assemble(newDocx(contents['for'](content)),data).then(variantDocx=>{
-					var _if=variantDocx.variantChildren[0]
-					expect(_if.variantChildren.length).toBe(3)
-					if(_if.type=="variant.for" && _if.variantChildren[0].type==model){
-						moreExpect(_if.variantChildren[0])
+					var _for=variantDocx.variantChildren[0]
+					if(_for.type=="variant.for" && _for.variantChildren[0].type==model){
+						moreExpect(_for.assembledXml)
 						done()
 					}else{
 						fail()
@@ -366,20 +365,20 @@ describe("docxhub", function(){
 			}
 
 			it("expression",done=>check(contents['var'](),'variant.exp',{name:"abc"}, done, a=>{
-				expect(a.wXml.$1('t').textContent).toBe("abc")
+				expect(a.$1('t').textContent).toBe("abc")
 			}))
 
 			it("if", done=>check(contents['if'](),'variant.if',{name:"abc"}, done,a=>{
-				expect(a.wXml.$1('t').textContent).toBe("hello.")
+				expect(a.$1('t').textContent).toBe("hello.")
 			}))
 
 			it("for", done=>check(contents['for'](),'variant.for',{},done, a=>{
-				expect(a.wXml.$('p').length).toBe(3)
+				expect(a.$('p').length).toBe(3)
 			}))
 
 			it("for", done=>check(contents['for'](contents['var']()),'variant.for',{name:"abc"},done, a=>{
-				expect(a.wXml.$('p').length).toBe(3)
-				expect(a.wXml.$1('t').textContent).toBe("abc")
+				expect(a.$('p').length).toBe(3)
+				expect(a.$1('t').textContent).toBe("abc")
 
 			}))
 
@@ -394,7 +393,7 @@ describe("docxhub", function(){
 				var loop3=contents['for'](varContent,"var k=0,b=c.b,klen=b.length;k&lt;klen;k++")
 				var loop2=contents['for'](loop3,"var j=0,jlen=a.length;j&lt;jlen;j++")
 				check(loop2,'variant.for',data,done, a=>{
-					var texts=a.wXml.parentNode.$('t')
+					var texts=a.$('t')
 					expect(texts.length).toBe(18)
 					expect(texts[0].textContent).toBe("0.z.a")
 					expect(texts[17].textContent).toBe("2.y.c")

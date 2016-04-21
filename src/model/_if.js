@@ -3,9 +3,32 @@ import Variant from "./variant"
 export default class If extends Variant{
 	static get type(){return"variant.if"}
 	_initVariant(){
+		super._initVariant()
+		
 		this.codeBlock=this.parsedCode.body[0].consequent.body
 		while(!Array.isArray(this.codeBlock))//if()with(){}
 			this.codeBlock=this.codeBlock.body
+			
+		
+		/*if(...){assemble(true),...}else assemble(false)*/
+		let assemble_name="assemble_"+this.vId
+		this.codeBlock.push({
+			"type": "ExpressionStatement",
+			"expression": {
+				"type": "CallExpression",
+				"callee": {
+					"type": "Identifier",
+					"name": assemble_name
+				},
+				"arguments": [
+					{
+						"type": "Literal",
+						"value": true,
+						"raw": "false"
+					}
+				]
+			}
+		})
 		
 		this.parsedCode.body[0].alternate={
 			"type": "ExpressionStatement",
@@ -13,7 +36,7 @@ export default class If extends Variant{
 				"type": "CallExpression",
 				"callee": {
 					"type": "Identifier",
-					"name": "assemble_"+this.vId
+					"name": assemble_name
 				},
 				"arguments": [
 					{
@@ -24,20 +47,14 @@ export default class If extends Variant{
 				]
 			}
 		}
-		super._initVariant()
 	}
 
-	assemble(){
-		var iPara={}, code=this._toJavascript(iPara)
-		var satified=new Function("data",`${code} return true`)(iPara)
+	assemble(satified){
 		if(!satified){
-			let content=this.wXml.$1('sdtContent')
-			while(content.lastChild)
-				content.removeChild(content.lastChild)
+			this.clear()
+			super.assemble(...arguments)
+		}else{
+			//keep it
 		}
-		super.assemble(...arguments)
-	}
-	_toJavascript(iPara){
-		return `${this.variantParent._toJavascript(iPara)} if(${this.code})`
 	}
 }
