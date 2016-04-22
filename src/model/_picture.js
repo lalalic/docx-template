@@ -49,6 +49,27 @@ export default class Picture extends Variant{
 	}
 
 	getImageData(url){
-		return $.get(url)
+		return new Promise((resolve,reject)=>{
+			if($.isNode){
+				let proto=url.split(":")[0]
+				let http=require(proto)
+				http.request(url, res=>{
+					let data=new Buffer()
+					res.on('data',chunk=>data.append(chunk))
+					res.on('end', ()=>resolve(data))
+				}).on("error", e=>reject(e))
+			}else{
+				var xmlHTTP = new XMLHttpRequest();
+			    xmlHTTP.open('GET',url,true);
+			    xmlHTTP.responseType = 'arraybuffer';
+			    xmlHTTP.onload = function(e){
+					if(this.status==200)
+			        	resolve(this.response)
+					else
+						reject(new Error(this.reponseText))
+			    }
+			    xmlHTTP.send();
+			}
+		})
 	}
 }
