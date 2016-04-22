@@ -1,14 +1,13 @@
 import RichText from "docx4js/lib/openxml/docx/model/control/richtext"
 import esprima from "esprima"
 
-var id=Date.now()
+var id=0
 export default class Variant extends RichText{
-	constructor(wXml){
+	constructor(){
 		super(...arguments)
 		this.docxPart=this.wDoc.parseContext.part.current
-		this.vId=id++
-		this.code=arguments[3]
-		this.parsedCode=arguments[4]
+		this.vId=`__${this.constructor.type.split(".").pop()}_${id++}`
+		this.parsedCode=arguments[3]
 		this._initVariant()
 	}
 
@@ -17,37 +16,48 @@ export default class Variant extends RichText{
 		this.variantChildren=[]
 		this.wDoc.beginVariant(this)
 		
-		
-		
-		let fname=`assemble_${this.vId}`
 		this.variantParent.codeBlock.push({
             "type": "ExpressionStatement",
             "expression": {
                 "type": "CallExpression",
                 "callee": {
-                    "type": "Identifier",
-                    "name": `pre_${fname}`
-                },
+					"type": "MemberExpression",
+					"computed": false,
+					"object": {
+						"type": "Identifier",
+						"name": this.vId
+					},
+					"property": {
+						"type": "Identifier",
+						"name": "pre_assemble"
+					}
+				},
                 "arguments": []
             }
         })
-		this.wDoc.variantAssembles[`pre_${fname}`]=this.pre_assemble.bind(this)
+		
 		
 		this.variantParent.codeBlock.push(this.parsedCode)
-		this.wDoc.variantAssembles[fname]=this.assemble.bind(this)
 		
 		this.variantParent.codeBlock.push({
             "type": "ExpressionStatement",
             "expression": {
                 "type": "CallExpression",
                 "callee": {
-                    "type": "Identifier",
-                    "name": `post_${fname}`
-                },
+					"type": "MemberExpression",
+					"computed": false,
+					"object": {
+						"type": "Identifier",
+						"name": this.vId
+					},
+					"property": {
+						"type": "Identifier",
+						"name": "post_assemble"
+					}
+				},
                 "arguments": []
             }
         })
-		this.wDoc.variantAssembles[`post_${fname}`]=this.post_assemble.bind(this)
 	}
 
 	parse(){//Variant interface
@@ -84,16 +94,19 @@ export default class Variant extends RichText{
 	
 	get assembledXml(){
 		var a;
-		if(this._assembledXml  && null==this._assembledXml.parentNode)
-			return this._assembledXml
+		if(this.isRootChild)
+			return this._assembledXml||this.wXml
 		else if(a=this.variantParent.assembledXml)
 			return a.querySelector(`[id='${this.vId}']`)
 	}
 	
 	clear(){
+		this.assembledXml.$1('sdtContent').innerHTML=""
+		/*
 		if(this.assembledXml.parentNode)
 			this.assembledXml.remove()
 		else
 			this.assembledXml=null
+		*/
 	}
 }

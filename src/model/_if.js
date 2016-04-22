@@ -11,14 +11,21 @@ export default class If extends Variant{
 			
 		
 		/*if(...){assemble(true),...}else assemble(false)*/
-		let assemble_name="assemble_"+this.vId
 		this.codeBlock.push({
 			"type": "ExpressionStatement",
 			"expression": {
 				"type": "CallExpression",
 				"callee": {
-					"type": "Identifier",
-					"name": assemble_name
+					"type": "MemberExpression",
+					"computed": false,
+					"object": {
+						"type": "Identifier",
+						"name": this.vId
+					},
+					"property": {
+						"type": "Identifier",
+						"name": "assemble"
+					}
 				},
 				"arguments": [
 					{
@@ -35,8 +42,16 @@ export default class If extends Variant{
 			"expression": {
 				"type": "CallExpression",
 				"callee": {
-					"type": "Identifier",
-					"name": assemble_name
+					"type": "MemberExpression",
+					"computed": false,
+					"object": {
+						"type": "Identifier",
+						"name": this.vId
+					},
+					"property": {
+						"type": "Identifier",
+						"name": "assemble"
+					}
 				},
 				"arguments": [
 					{
