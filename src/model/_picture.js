@@ -2,10 +2,10 @@ import Variant from "./variant"
 
 export default class Picture extends Variant{
 	static get type(){return"variant.picture"}
-	
+
 	_initVariant(){
 		super._initVariant()
-		
+
 		/*assemble(code)*/
 		this.parsedCode.body[0]={
             "type": "ExpressionStatement",
@@ -34,15 +34,21 @@ export default class Picture extends Variant{
 		if(value==null || value==undefined || value==''){
 			this.assembledXml.parentNode.removeChild(this.assembledXml)
 		}else{
-			let id=this.docxPart.addRel({
-				Type:"http://schemas.openxmlformats.org/officeDocument/2006/relationships/image",
-				Target:value,
-				TargetMode:"External"
-			})
 			let blip=this.assembledXml.$1('graphicData blip')
-			blip.removeAttribute("r:embed")
-			blip.setAttribute("r:link",id)
+
+			this.getImageData(value).then(data=>{
+				let id=this.docxPart.addRel({
+					type:"http://schemas.openxmlformats.org/officeDocument/2006/relationships/image",
+					target:data
+				})
+				blip.removeAttribute("r:embed")
+				blip.setAttribute("r:link",id)
+			})
 		}
 		super.assemble(...arguments)
+	}
+
+	getImageData(url){
+		return $.get(url)
 	}
 }

@@ -37,10 +37,10 @@ export default class Document extends BaseDocument{
 						if(_currentContainer &&
 							_currentContainer!=variantDocument)
 							variant.wXml.setAttribute('id',variant.vId)
-						
+
 						if(_currentContainer==variantDocument)
 							variant.isRootChild=true
-						
+
 						switch(variant.type){
 						case 'variant.exp':
 						case 'variant.picture':
@@ -67,7 +67,7 @@ export default class Document extends BaseDocument{
 							_currentContainer=_variantContainers.pop()
 						}
 					},
-					
+
 					variants
 			}
 		}(this))
@@ -97,8 +97,8 @@ export default class Document extends BaseDocument{
 	visit(){
 		//which makes the class as a visitor
 	}
-	
-	
+
+
 	/**
 	* public API for variant docx
 	*/
@@ -107,9 +107,9 @@ export default class Document extends BaseDocument{
 			this.variantChildren.forEach(a=>a.assembledXml=a.wXml.cloneNode(true) )
 
 		this.parsedCode.call({}, data, this.wDoc.variants)
-		
+
 		let wDoc=this.wDoc, variantChildren=this.variantChildren
-			
+
 		if(transactional){
 			return {
 				save(file){
@@ -156,33 +156,63 @@ var xmldom="xmldom";
 		setChanged(a){
 			var {_changedParts=new Set()}=this.doc
 			this.doc._changedParts=_changedParts
-			
+
 			_changedParts[a ? 'add' : 'remove'](this)
 		},
 		_serialize(){
 			this.doc.raw.file(this.name, `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\r\n${(new XMLSerializer()).serializeToString(this.documentElement)}`)
 		},
-		
+
+		getFolderAndRelName(){
+			var i=name.lastIndexOf('/');
+			if(i!==-1){
+				folder=name.substring(0,i)
+				relName=folder+"/_rels/"+name.substring(i+1)+".rels";
+			}{
+				folder="",
+				relName="_rels/"+name+".rels",
+			}
+			return [folder, relName]
+		},
+
 		addRel(rel){
+			var [folder, relName]=this.getFolderAndRelName()
 			var id=`rId${Math.max(...Object.keys(this.rels).map(a=>parseInt(a.substring(3))))+1}`
 			this.rels[id]=rel
-			var relPart=this.doc.getPart(this.relName)
+			var {type, target}=rel
+			if(typeof(target)=='string')
+				rel.targetMode="External"
+			else if(type.endsWith("/image")){
+				let targetName="media/image"+(Math.max(...Object.keys(this.rels).map(a=>{
+						let t=this.rels[a]
+						if(t.type=='image'&&!t.targetMode)
+							return parseInt(t.target.match(/\d+/)[0]||"0")
+
+						return 0
+					})+1)+".jpg";
+				this.doc.raw.file(`${folder}/${targetName}`, target)
+				rel.target=targetName
+			}
+
+			var relPart=this.doc.getPart(relName)
 			var root=relPart.documentElement,
 				el=root.ownerDocument.createElement('Relationship')
 			el.setAttribute("Id",id)
-			Object.keys(rel).forEach(a=>el.setAttribute(a,rel[a]))
+			var naming=(a)=>a.charAt(0).toUpperCase()+a.substr(1)
+			Object.keys(rel).forEach(a=>el.setAttribute(naming(a),rel[a]))
 			root.appendChild(el)
 			relPart.setChanged(true)
 			return id
 		},
-		
+
 		removeRel(id){
 			delete this.rels[id]
 			this.documentElement.$1(`Relationship[Id=${id}]`).remove()
-			this.doc.getPart(this.relName).setChanged(true)
+			var [folder, relName]=this.getFolderAndRelName()
+			this.doc.getPart(relName).setChanged(true)
 		}
 	})
-	
+
 	Object.assign(DocxDocument.prototype,{
 		_serialize(){
 			var {_changedParts}=this
@@ -191,9 +221,9 @@ var xmldom="xmldom";
 				delete this._changedParts
 			}
 		},
-		
+
 		_restore(){
-			
+
 		}
 	})
 })($.isNode ? require(xmldom).XMLSerializer : XMLSerializer)

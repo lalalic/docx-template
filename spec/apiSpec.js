@@ -12,7 +12,7 @@ describe("docx hub", ()=>{
 			expect(!!docx.save).toBe(true)
 			expect(!!docx.data).toBe(true)
 			expect(!!docx.variantChildren).toBe(true)
-			
+
 			let parsed=false
 			let docx4js=require('docx4js')
 			docx.parse(docx4js.createVisitorFactory(function(identifiedWordModel){
@@ -22,29 +22,29 @@ describe("docx hub", ()=>{
 			done()
 		}).catch(e=>{fail(e);done()})
 	})
-	
+
 	it("can parse, and return {assemble: return {parse,save,data,variantChildren}, variantChildren}", done=>{
 		DocxHub.parse(newDocx()).then(docx=>{
 			expect(!!docx.variantChildren).toBe(true)
 			expect(!!docx.assemble).toBe(true)
-			
-			
+
+
 			let assembled=docx.assemble({},true)
 			expect(!!assembled.parse).toBe(true)
 			expect(!!assembled.save).toBe(true)
 			expect(!!assembled.data).toBe(true)
 			expect(!!assembled.variantChildren).toBe(true)
-			
+
 			let parsed=false
 			assembled.parse(docx4js.createVisitorFactory(function(identifiedWordModel){
 				parsed=true
 			}))
 			expect(parsed).toBe(true)
-			
+
 			done()
 		}).catch(e=>{fail(e);done()})
 	})
-	
+
 	describe("assembled result api", ()=>{
 		it("can save", done=>{
 			let Part= require("docx4js/lib/openxml/part")
@@ -57,9 +57,9 @@ describe("docx hub", ()=>{
 			}else{
 				let span=document.createElement('span')
 				spyOn(document,"createElement").and.returnValue(span)
-				spyOn(window.URL,"createObjectURL").and.returnValue("") 
+				spyOn(window.URL,"createObjectURL").and.returnValue("")
 			}
-			
+
 			DocxHub.assemble(newDocx(`
 				<w:sdt>
 					<w:sdtPr>
