@@ -164,11 +164,11 @@ describe("docxhub", function(){
 				}))
 
 				it("if(false)", done=>check(contents['if']("false"),'variant.if',{},done, assembledVariant=>{
-					expect(!!assembledVariant.assembledXml).toBe(false)
+					expect(assembledVariant.assembledXml.$1('sdtContent').childNodes.length).toBe(0)
 				}))
 
 				it("if(name=='abcd')", done=>check(contents['if']("name=='abcd'"),'variant.if',{name:"abc"},done, assembledVariant=>{
-					expect(!!assembledVariant.assembledXml).toBe(false)
+					expect(assembledVariant.assembledXml.$1('sdtContent').childNodes.length).toBe(0)
 				}))
 			})
 
@@ -184,7 +184,9 @@ describe("docxhub", function(){
 
 				it("for(var i=0, len=types.length;i<len;i++): ${name}", done=>
 					check(contents['for']("var i=0,len=types.length;i &lt; len;i++",contents['var']()),'variant.for',{types:["a","b"],name:"hello"},done, assembledVariant=>{
+						expect(assembledVariant.variantChildren.length).toBe(1)
 						var ps=assembledVariant.assembledXml.$('p')
+						//console.log(assembledVariant.assembledXml.outerHTML)
 						expect(ps.length).toBe(2)
 						expect(ps[0].textContent.trim()).toBe("hello")
 						expect(ps[1].textContent.trim()).toBe("hello")

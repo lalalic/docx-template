@@ -14,9 +14,17 @@ export default class For extends Variant{
             "expression": {
                 "type": "CallExpression",
                 "callee": {
-                    "type": "Identifier",
-                    "name": `assemble_${this.vId}`
-                },
+					"type": "MemberExpression",
+					"computed": false,
+					"object": {
+						"type": "Identifier",
+						"name": this.vId
+					},
+					"property": {
+						"type": "Identifier",
+						"name": "assemble"
+					}
+				},
                 "arguments": []
 			}
 		})

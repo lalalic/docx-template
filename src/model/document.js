@@ -5,17 +5,23 @@ import docx4js from "docx4js"
 
 import BaseDocument from "docx4js/lib/openxml/docx/model/document"
 
-function callee(name){
-	return {
-		"type": "ExpressionStatement",
-		"expression": {
-			"type": "CallExpression",
-			"callee": {
-				"type": "Identifier",
-				"name": name
-			},
-			"arguments": []
-		}
+
+function getNewDocxData(wDoc){
+	return $.isNode ? wDoc.raw.generate({type:"nodebuffer"}) : wDoc.raw.generate({type: "blob",mimeType: "application/docx"})
+}
+
+function doSave(newDocxData,file){
+	if($.isNode){
+		let fs="fs"
+		require(fs).writeFile(file||`${Date.now()}.docx`,newDocxData)
+	}else{
+		let url = window.URL.createObjectURL(newDocxData)
+		let link = document.createElement("a");
+		document.body.appendChild(link)
+		link.download = `${file||'new'}.docx`;
+		link.href = url;
+		link.click()
+		document.body.removeChild(link)
 	}
 }
 
@@ -25,23 +31,29 @@ export default class Document extends BaseDocument{
 		Object.assign(this.wDoc,function(variantDocument){
 			let _currentContainer,
 				_variantContainers=[],
-				variantAssembles={}
+				variants={}
 			return {
 					beginVariant(variant){
 						if(_currentContainer &&
 							_currentContainer!=variantDocument)
 							variant.wXml.setAttribute('id',variant.vId)
 						
+						if(_currentContainer==variantDocument)
+							variant.isRootChild=true
+						
 						switch(variant.type){
 						case 'variant.exp':
+						case 'variant.picture':
 							variant.variantParent=_currentContainer
 							_currentContainer.variantChildren.push(variant)
+							variants[variant.vId]=variant
 						break
 						case 'variant.if':
 						case 'variant.for':
 							variant.variantParent=_currentContainer
 							_currentContainer.variantChildren.push(variant)
 							_variantContainers.push(_currentContainer)
+							variants[variant.vId]=variant
 						case 'document':
 							_currentContainer=variant
 						}
@@ -56,13 +68,13 @@ export default class Document extends BaseDocument{
 						}
 					},
 					
-					variantAssembles
+					variants
 			}
 		}(this))
 
 		this.variantParent=null
 		this.variantChildren=[]
-		this.parsedCode=esprima.parse("with(arguments[0]){with(arguments[1]){}}")
+		this.parsedCode=esprima.parse("with(data){with(variants){}}")
 		this.codeBlock=this.parsedCode.body[0].body.body[0].body.body
 		this.wDoc.beginVariant(this)
 	}
@@ -76,7 +88,8 @@ export default class Document extends BaseDocument{
 
 		if(typeof(this.parsedCode)!='function'){
 			let code=escodegen.generate(this.parsedCode)
-			this.parsedCode=new Function("data,option",code)
+			console.log(code)
+			this.parsedCode=new Function("data,variants",code)
 		}
 		return r
 	}
@@ -90,33 +103,13 @@ export default class Document extends BaseDocument{
 	* public API for variant docx
 	*/
 	assemble(data, transactional){
-		this.variantChildren.map(variant=>{
-			variant.assembledXml= transactional ? variant.wXml.cloneNode(true) : variant.wXml
-		})
-		
-		this.parsedCode(data, this.wDoc.variantAssembles)
+		if(!transactional)
+			this.variantChildren.forEach(a=>a.assembledXml=a.wXml.cloneNode(true) )
+
+		this.parsedCode.call({}, data, this.wDoc.variants)
 		
 		let wDoc=this.wDoc, variantChildren=this.variantChildren
 			
-		function getNewDocxData(){
-			return $.isNode ? wDoc.raw.generate({type:"nodebuffer"}) : wDoc.raw.generate({type: "blob",mimeType: "application/docx"})
-		}
-		
-		function doSave(newDocxData,file){
-			if($.isNode){
-				let fs="fs"
-				require(fs).writeFile(file||`${Date.now()}.docx`,newDocxData)
-			}else{
-				let url = window.URL.createObjectURL(newDocxData)
-				let link = document.createElement("a");
-				document.body.appendChild(link)
-				link.download = `${file||'new'}.docx`;
-				link.href = url;
-				link.click()
-				document.body.removeChild(link)
-			}
-		}
-		
 		if(transactional){
 			return {
 				save(file){
@@ -127,7 +120,7 @@ export default class Document extends BaseDocument{
 					return wDoc.parse(...arguments)
 				},
 				get data(){
-					return getNewDocxData()
+					return getNewDocxData(wDoc)
 				},
 				variantChildren
 			}
@@ -138,7 +131,8 @@ export default class Document extends BaseDocument{
 				parent.removeChild(viariant.wXml)
 			})
 			wDoc._serialize()
-			let newDocxData=getNewDocxData()
+			let newDocxData=getNewDocxData(wDoc)
+			wDoc._restore()
 			return {
 				save(file){
 					doSave(newDocxData,file)
@@ -170,13 +164,16 @@ var xmldom="xmldom";
 		},
 		
 		addRel(rel){
-			var id=`rId${Math.max(Object.keys(this.rels).map(a=>parseInt(a.substring(3))))+1}`
+			var id=`rId${Math.max(...Object.keys(this.rels).map(a=>parseInt(a.substring(3))))+1}`
 			this.rels[id]=rel
-			var el=this.documentElement.createElement('Relationship')
+			var relPart=this.doc.getPart(this.relName)
+			var root=relPart.documentElement,
+				el=root.ownerDocument.createElement('Relationship')
 			el.setAttribute("Id",id)
 			Object.keys(rel).forEach(a=>el.setAttribute(a,rel[a]))
-			this.documentElement.appendChild(el)
-			this.doc.getPart(this.relName).setChanged(true)
+			root.appendChild(el)
+			relPart.setChanged(true)
+			return id
 		},
 		
 		removeRel(id){
@@ -193,6 +190,10 @@ var xmldom="xmldom";
 				_changedParts.forEach(part=>part._serialize())
 				delete this._changedParts
 			}
+		},
+		
+		_restore(){
+			
 		}
 	})
 })($.isNode ? require(xmldom).XMLSerializer : XMLSerializer)

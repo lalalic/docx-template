@@ -1,7 +1,7 @@
 import Variant from "./variant"
 
-export default class Expression extends Variant{
-	static get type(){return"variant.exp"}
+export default class Picture extends Variant{
+	static get type(){return"variant.picture"}
 	
 	_initVariant(){
 		super._initVariant()
@@ -32,14 +32,16 @@ export default class Expression extends Variant{
 
 	assemble(value){
 		if(value==null || value==undefined || value==''){
-			this.assembledXml.$('t').forEach(t=>t.remove())
+			this.assembledXml.parentNode.removeChild(this.assembledXml)
 		}else{
-			this.assembledXml.$('t').forEach((t,i)=>{
-				if(i==0)
-					t.textContent=value
-				else
-					t.remove()
+			let id=this.docxPart.addRel({
+				Type:"http://schemas.openxmlformats.org/officeDocument/2006/relationships/image",
+				Target:value,
+				TargetMode:"External"
 			})
+			let blip=this.assembledXml.$1('graphicData blip')
+			blip.removeAttribute("r:embed")
+			blip.setAttribute("r:link",id)
 		}
 		super.assemble(...arguments)
 	}
