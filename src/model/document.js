@@ -142,6 +142,12 @@ export default class Document extends BaseDocument{
 				variantChildren
 			}
 		}
+
+		if(transactional){
+			this.assemble=function(){
+				throw new Error("transactional assembly can't support multiple times assembling")
+			}
+		}
 	}
 }
 
