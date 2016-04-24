@@ -86,11 +86,9 @@ export default class Document extends BaseDocument{
 		var r=super.parse(...arguments)
 		this.wDoc.endVariant(this)
 
-		if(typeof(this.parsedCode)!='function'){
-			let code=escodegen.generate(this.parsedCode)
-			console.log(code)
-			this.parsedCode=new Function("data,variants",code)
-		}
+		if(typeof(this.parsedCode)!='function')
+			this.parsedCode=new Function("data,variants",escodegen.generate(this.parsedCode))
+
 		return r
 	}
 
@@ -164,13 +162,13 @@ var xmldom="xmldom";
 		},
 
 		getFolderAndRelName(){
-			var i=name.lastIndexOf('/');
+			var i=name.lastIndexOf('/'),folder,relName
 			if(i!==-1){
-				folder=name.substring(0,i)
+				folder=name.substring(0,i+1)
 				relName=folder+"/_rels/"+name.substring(i+1)+".rels";
 			}{
-				folder="",
-				relName="_rels/"+name+".rels",
+				folder=""
+				relName="_rels/"+name+".rels"
 			}
 			return [folder, relName]
 		},
@@ -189,9 +187,12 @@ var xmldom="xmldom";
 							return parseInt(t.target.match(/\d+/)[0]||"0")
 
 						return 0
-					})+1)+".jpg";
-				this.doc.raw.file(`${folder}/${targetName}`, target)
+					}))+1)+".jpg";
+				let partName=`${folder}${targetName}`
+				this.doc.raw.file(partName, target)
+				this.doc.parts[partName]=this.doc.raw.file(partName)
 				rel.target=targetName
+				type="image"
 			}
 
 			var relPart=this.doc.getPart(relName)
@@ -201,6 +202,7 @@ var xmldom="xmldom";
 			var naming=(a)=>a.charAt(0).toUpperCase()+a.substr(1)
 			Object.keys(rel).forEach(a=>el.setAttribute(naming(a),rel[a]))
 			root.appendChild(el)
+			rel.type=type
 			relPart.setChanged(true)
 			return id
 		},

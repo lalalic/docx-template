@@ -41,8 +41,7 @@ export default class Picture extends Variant{
 					type:"http://schemas.openxmlformats.org/officeDocument/2006/relationships/image",
 					target:data
 				})
-				blip.removeAttribute("r:embed")
-				blip.setAttribute("r:link",id)
+				blip.setAttribute("r:embed", id)
 			})
 		}
 		super.assemble(...arguments)
