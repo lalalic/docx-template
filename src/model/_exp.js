@@ -8,26 +8,58 @@ export default class Expression extends Variant{
 		
 		/*assemble(code)*/
 		this.parsedCode.body[0]={
-            "type": "ExpressionStatement",
-            "expression": {
-                "type": "CallExpression",
-                "callee": {
-					"type": "MemberExpression",
-					"computed": false,
-					"object": {
-						"type": "Identifier",
-						"name": this.vId
-					},
-					"property": {
-						"type": "Identifier",
-						"name": "assemble"
-					}
-				},
-                "arguments": [
-					this.parsedCode.body[0].expression
-				]
-			}
-		}
+            "type": "TryStatement",
+            "block": {
+                "type": "BlockStatement",
+                "body": [{
+						"type": "ExpressionStatement",
+						"expression": {
+							"type": "CallExpression",
+							"callee": {
+								"type": "MemberExpression",
+								"computed": false,
+								"object": {
+									"type": "Identifier",
+									"name": this.vId
+								},
+								"property": {
+									"type": "Identifier",
+									"name": "assemble"
+								}
+							},
+							"arguments": [
+								this.parsedCode.body[0].expression
+							]
+						}
+					}]
+            },
+            "guardedHandlers": [],
+            "handlers": [
+                {
+                    "type": "CatchClause",
+                    "param": {
+                        "type": "Identifier",
+                        "name": "e"
+                    },
+                    "body": {
+                        "type": "BlockStatement",
+                        "body": []
+                    }
+                }
+            ],
+            "handler": {
+                "type": "CatchClause",
+                "param": {
+                    "type": "Identifier",
+                    "name": "e"
+                },
+                "body": {
+                    "type": "BlockStatement",
+                    "body": []
+                }
+            },
+            "finalizer": null
+        }
 	}
 
 	assemble(value){

@@ -4,12 +4,16 @@
 	<script src="index.js"></script>
 	<script>
 		function test(input){
+			
 			var d=data.value.trim()
 			if(d.length==0)
 				d="{}"
 			require("docx-hub").assemble(input.files[0],JSON.parse(d)).then(function(assembled){
 				assembled.save()
-				document.body.querySelector('input').value=""
+				input.value=""
+			}).catch(function(e){
+				input.value=""
+				alert(e.message)
 			})
 		}
 	</script>
