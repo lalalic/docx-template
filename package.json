@@ -1,6 +1,6 @@
 {
-  "name": "docx-hub",
-  "description": "personalized docx with data",
+  "name": "docx-template",
+  "description": "customizing docx template with data",
   "version": "0.2.0",
   "author": {
     "name": "Raymond Li",
@@ -8,7 +8,10 @@
   },
   "keywords": [
     "docx",
-    "personalized"
+    "template",
+    "docx4js",
+    "personalize",
+    "customize"
   ],
   "license": "GPL",
   "readme": "README.md",
