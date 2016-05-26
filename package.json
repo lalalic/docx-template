@@ -38,7 +38,8 @@
     "escodegen": "^1.8.0",
     "esprima": "^2.7.2",
     "jszip": ">=2.4.0",
-    "xmldom": "^0.1.22"
+    "xmldom": "^0.1.22",
+	"docx4js": ">=1.3.2"
   },
   "babel": {
     "presets": [
