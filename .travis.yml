@@ -6,4 +6,5 @@ before_deploy:
 
 deploy:
  provider: npm
+ email: "lalalic@139.com"
  api_key: $NPM_KEY
