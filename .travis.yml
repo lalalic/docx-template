@@ -1,6 +1,9 @@
 language: node_js
  node_js:
-  - 0.10.0
+  - 4.2
+before_deploy:
+ - npm run dist.min
+
 deploy:
  provider: npm
  api_key: $NPM_KEY

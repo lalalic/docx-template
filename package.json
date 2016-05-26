@@ -1,7 +1,7 @@
 {
   "name": "docx-template",
   "description": "customizing docx template with data",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "author": {
     "name": "Raymond Li",
     "email": "lalalic@139.com"
@@ -53,7 +53,7 @@
   "scripts": {
     "build": "babel src -d lib --source-maps inline",
     "dist": "watchify -v -d -r ./lib:docx-template -o dist/index.js",
-    "dist.min": "uglifyjs dist/index.js -o dist/index.min.js",
+    "dist.min": "browserify -g uglifyify -d -r ./lib:docx-template -o dist/docx-template.js",
 
     "test": "jasmine",
     "test.debug": "node --debug-brk .jasmine.js",
