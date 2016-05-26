@@ -1,7 +1,7 @@
 {
   "name": "docx-template",
   "description": "customizing docx template with data",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "author": {
     "name": "Raymond Li",
     "email": "lalalic@139.com"
@@ -35,7 +35,6 @@
     "watchify": ">=3.0.0 <4.0.0"
   },
   "dependencies": {
-    "docx4js": "^1.2.4",
     "escodegen": "^1.8.0",
     "esprima": "^2.7.2",
     "jszip": ">=2.4.0",
@@ -54,7 +53,7 @@
     "build": "babel src -d lib --source-maps inline",
     "dist": "watchify -v -d -r ./lib:docx-template -o dist/index.js",
     "dist.min": "uglifyjs dist/index.js -o dist/index.min.js",
-    "prepublish": "npm run dist.min",
+
     "test": "jasmine",
     "test.debug": "node --debug-brk .jasmine.js",
     "karma": "karma start"
