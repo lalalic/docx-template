@@ -1,6 +1,9 @@
 language: node_js
 node_js:
   - 4.2
+install:
+ - npm install --production
+ - npm install browserify uglifyify jasmine
 before_deploy:
  - npm run dist.min
 
