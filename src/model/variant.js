@@ -101,12 +101,7 @@ export default class Variant extends RichText{
 	}
 	
 	clear(){
-		this.assembledXml.$1('sdtContent').innerHTML=""
-		/*
-		if(this.assembledXml.parentNode)
-			this.assembledXml.remove()
-		else
-			this.assembledXml=null
-		*/
+		Array.from(this.assembledXml.$1('sdtContent').childNodes)
+			.forEach(child=>child.parentNode.removeChild(child))
 	}
 }

@@ -86,8 +86,11 @@ export default class Document extends BaseDocument{
 		var r=super.parse(...arguments)
 		this.wDoc.endVariant(this)
 
-		if(typeof(this.parsedCode)!='function')
+		if(typeof(this.parsedCode)!='function'){
+			var code=escodegen.generate(this.parsedCode)
+			//console.log(code)
 			this.parsedCode=new Function("data,variants",escodegen.generate(this.parsedCode))
+		}
 
 		return r
 	}
@@ -168,11 +171,12 @@ var xmldom="xmldom";
 		},
 
 		getFolderAndRelName(){
+			var name=this.name
 			var i=name.lastIndexOf('/'),folder,relName
 			if(i!==-1){
-				folder=name.substring(0,i+1)
+				folder=name.substring(0,i)
 				relName=folder+"/_rels/"+name.substring(i+1)+".rels";
-			}{
+			}else{
 				folder=""
 				relName="_rels/"+name+".rels"
 			}
@@ -194,10 +198,10 @@ var xmldom="xmldom";
 
 						return 0
 					}))+1)+".jpg";
-				let partName=`${folder}${targetName}`
+				let partName=`${folder}/${targetName}`
 				this.doc.raw.file(partName, target)
 				this.doc.parts[partName]=this.doc.raw.file(partName)
-				rel.target=targetName
+				rel.target=partName
 				type="image"
 			}
 

@@ -1,7 +1,7 @@
 {
   "name": "docx-template",
   "description": "customizing docx template with data",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "author": {
     "name": "Raymond Li",
     "email": "lalalic@139.com"
@@ -32,6 +32,7 @@
     "karma-chrome-launcher": "^0.2.3",
     "karma-jasmine": "^0.3.8",
     "uglify-js": "^2.6.2",
+	"uglifyify": "^3.0.1",
     "watchify": ">=3.0.0 <4.0.0"
   },
   "dependencies": {
@@ -39,7 +40,8 @@
     "esprima": "^2.7.2",
     "jszip": ">=2.4.0",
     "xmldom": "^0.1.22",
-	"docx4js": ">=1.3.2"
+    "docx4js": ">=1.3.2",
+    "request": "^2.67.0"
   },
   "babel": {
     "presets": [
@@ -54,8 +56,7 @@
     "build": "babel src -d lib --source-maps inline",
     "dist": "watchify -v -d -r ./lib:docx-template -o dist/index.js",
     "dist.min": "browserify -g uglifyify -d -r ./lib:docx-template -o dist/docx-template.js",
-
-
+	
     "test": "jasmine",
     "test.debug": "node --debug-brk .jasmine.js",
     "karma": "karma start"

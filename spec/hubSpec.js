@@ -207,92 +207,6 @@ describe("docxhub", function(){
 
 	describe("can assemble with data for", function(){
 		describe("root", function(){
-			function check(content, model, data, done, moreExpect){
-				DocxHub.assemble(newDocx(content), data).then(docx=>{
-					expect(docx.variantChildren.length).toBeGreaterThan(0)
-					if(docx.variantChildren[0].type==model){
-						moreExpect(docx.variantChildren[0],docx)
-						done()
-					}else{
-						fail()
-						done()
-					}
-				}).catch(e=>{
-					fail(e)
-					done
-				})
-			}
-			it("expression, and main part are serialized with changes",done=>check(contents['var'](),'variant.exp',{name:"abc"}, done, (assembledVariant,docx)=>{
-				expect(assembledVariant.assembledXml.$1('t').textContent=="abc")
-				let Part=require("docx4js/lib/openxml/part")
-				spyOn(Part.prototype,"_serialize").and.callThrough()
-				docx.save()
-				expect(Part.prototype._serialize).toHaveBeenCalled()
-			}))
-
-			it("picture",done=>{
-				var Picture=require("../lib/model/_picture")
-				spyOn(Picture.prototype,"getImageData").and.returnValue(Promise.resolve([1,2,3]))
-				check(contents['picture'](),'variant.picture',{photo:"abc"}, done, (assembledVariant,docx)=>{
-					expect(Picture.prototype.getImageData).toHaveBeenCalledWith("abc")
-					// r:embed="rId10" updated
-					expect(assembledVariant.assembledXml.$1('blip').getAttribute('r:embed')).toBe("rId10")
-					// relationship appended
-					expect(!!assembledVariant.docxPart.rels["rId10"]).toBe(true)
-					// image part added
-					expect(!!assembledVariant.docxPart.getRel("rId10")).toBe(true)
-					done()
-				})
-			})
-
-			describe("if", function(){
-				it("if(true)", done=>check(contents['if']("true"),'variant.if',{},done, assembledVariant=>{
-					expect(assembledVariant.assembledXml.$1('sdtContent').childNodes.length).toBeGreaterThan(0)
-				}))
-
-				it("if(name=='abc')", done=>check(contents['if']("name='abc'"),'variant.if',{name:"abc"},done, assembledVariant=>{
-					expect(assembledVariant.assembledXml.$1('sdtContent').childNodes.length).toBeGreaterThan(0)
-				}))
-
-				it("if(false)", done=>check(contents['if']("false"),'variant.if',{},done, assembledVariant=>{
-					expect(assembledVariant.assembledXml.$1('sdtContent').childNodes.length).toBe(0)
-				}))
-
-				it("if(name=='abcd')", done=>check(contents['if']("name=='abcd'"),'variant.if',{name:"abc"},done, assembledVariant=>{
-					expect(assembledVariant.assembledXml.$1('sdtContent').childNodes.length).toBe(0)
-				}))
-			})
-
-			describe("for", function(){
-				it("for(var i=0;i<10;i++)", done=>check(contents['for']("var i=0;i&lt;10;i++"),'variant.for',{},done, assembledVariant=>{
-					expect(assembledVariant.assembledXml.$('p').length).toBe(10)
-				}))
-
-				it("for(var i=0, len=types.length;i<len;i++)", done=>
-					check(contents['for']("var i=0,len=types.length;i &lt; len;i++"),'variant.for',{types:["a","b"]},done, assembledVariant=>{
-						expect(assembledVariant.assembledXml.$('p').length).toBe(2)
-				}))
-
-				it("for(var i=0, len=types.length;i<len;i++): ${name}", done=>
-					check(contents['for']("var i=0,len=types.length;i &lt; len;i++",contents['var']()),'variant.for',{types:["a","b"],name:"hello"},done, assembledVariant=>{
-						expect(assembledVariant.variantChildren.length).toBe(1)
-						var ps=assembledVariant.assembledXml.$('p')
-						//console.log(assembledVariant.assembledXml.outerHTML)
-						expect(ps.length).toBe(2)
-						expect(ps[0].textContent.trim()).toBe("hello")
-						expect(ps[1].textContent.trim()).toBe("hello")
-				}))
-
-				it("for(var i=0, len=types.length;i<len;i++): ${types[i]}", done=>
-					check(contents['for']("var i=0,len=types.length;i &lt; len;i++",contents['var']('${types[i]}')),'variant.for',{types:["a","b"],name:"hello"},done, assembledVariant=>{
-						var ps=assembledVariant.assembledXml.$('p')
-						expect(ps.length).toBe(2)
-						expect(ps[0].textContent.trim()).toBe("a")
-						expect(ps[1].textContent.trim()).toBe("b")
-				}))
-
-			})
-
 			let contents={
 				"if":a=>`
 					<w:sdt>
@@ -416,7 +330,94 @@ describe("docxhub", function(){
 			                </w:p>
 			              </w:sdtContent>
 			            </w:sdt>`
+				}
+
+			function check(content, model, data, done, moreExpect){
+				DocxHub.assemble(newDocx(content), data).then(docx=>{
+					expect(docx.variantChildren.length).toBeGreaterThan(0)
+					if(docx.variantChildren[0].type==model){
+						moreExpect(docx.variantChildren[0],docx)
+						done()
+					}else{
+						fail()
+						done()
+					}
+				}).catch(e=>{
+					fail(e)
+					done
+				})
 			}
+			it("expression, and main part are serialized with changes",done=>check(contents['var'](),'variant.exp',{name:"abc"}, done, (assembledVariant,docx)=>{
+				expect(assembledVariant.assembledXml.$1('t').textContent=="abc")
+				let Part=require("docx4js/lib/openxml/part")
+				spyOn(Part.prototype,"_serialize").and.callThrough()
+				docx.save()
+				expect(Part.prototype._serialize).toHaveBeenCalled()
+			}))
+
+			it("picture",done=>{
+				var Picture=require("../lib/model/_picture")
+				spyOn(Picture.prototype,"getImageData").and.returnValue(Promise.resolve([1,2,3]))
+				check(contents['picture'](),'variant.picture',{photo:"abc"}, done, (assembledVariant,docx)=>{
+					expect(Picture.prototype.getImageData).toHaveBeenCalledWith("abc")
+					// r:embed="rId10" updated
+					expect(assembledVariant.assembledXml.$1('blip').getAttribute('r:embed')).toBe("rId10")
+					// relationship appended
+					expect(!!assembledVariant.docxPart.rels["rId10"]).toBe(true)
+					// image part added
+					expect(!!assembledVariant.docxPart.getRel("rId10")).toBe(true)
+					done()
+				})
+			})
+
+			describe("if", function(){
+				it("if(true)", done=>check(contents['if']("true"),'variant.if',{},done, assembledVariant=>{
+					expect(assembledVariant.assembledXml.$1('sdtContent').childNodes.length).toBeGreaterThan(0)
+				}))
+
+				it("if(name=='abc')", done=>check(contents['if']("name='abc'"),'variant.if',{name:"abc"},done, assembledVariant=>{
+					expect(assembledVariant.assembledXml.$1('sdtContent').childNodes.length).toBeGreaterThan(0)
+				}))
+
+				it("if(false)", done=>check(contents['if']("false"),'variant.if',{},done, assembledVariant=>{
+					expect(assembledVariant.assembledXml.$1('sdtContent').childNodes.length).toBe(0)
+				}))
+
+				it("if(name=='abcd')", done=>check(contents['if']("name=='abcd'"),'variant.if',{name:"abc"},done, assembledVariant=>{
+					expect(assembledVariant.assembledXml.$1('sdtContent').childNodes.length).toBe(0)
+				}))
+			})
+
+			describe("for", function(){
+				it("for(var i=0;i<10;i++)", done=>check(contents['for']("var i=0;i&lt;10;i++"),'variant.for',{},done, assembledVariant=>{
+					expect(assembledVariant.assembledXml.$('p').length).toBe(10)
+				}))
+
+				it("for(var i=0, len=types.length;i<len;i++)", done=>
+					check(contents['for']("var i=0,len=types.length;i &lt; len;i++"),'variant.for',{types:["a","b"]},done, assembledVariant=>{
+						expect(assembledVariant.assembledXml.$('p').length).toBe(2)
+				}))
+
+				it("for(var i=0, len=types.length;i<len;i++): ${name}", done=>
+					check(contents['for']("var i=0,len=types.length;i &lt; len;i++",contents['var']()),'variant.for',{types:["a","b"],name:"hello"},done, assembledVariant=>{
+						expect(assembledVariant.variantChildren.length).toBe(1)
+						var ps=assembledVariant.assembledXml.$('p')
+						//console.log(assembledVariant.assembledXml.outerHTML)
+						expect(ps.length).toBe(2)
+						expect(ps[0].textContent.trim()).toBe("hello")
+						expect(ps[1].textContent.trim()).toBe("hello")
+				}))
+
+				it("for(var i=0, len=types.length;i<len;i++): ${types[i]}", done=>
+					check(contents['for']("var i=0,len=types.length;i &lt; len;i++",contents['var']('${types[i]}')),'variant.for',{types:["a","b"],name:"hello"},done, assembledVariant=>{
+						var ps=assembledVariant.assembledXml.$('p')
+						expect(ps.length).toBe(2)
+						expect(ps[0].textContent.trim()).toBe("a")
+						expect(ps[1].textContent.trim()).toBe("b")
+				}))
+
+			})
+
 		})
 
 		describe("nested if", function(){
