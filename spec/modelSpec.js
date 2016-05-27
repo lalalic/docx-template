@@ -1,15 +1,13 @@
-require("../lib")
-
-var docx4js=require("docx4js")
+var DocxHub=require("../lib")
 var newDocx=require( "docx4js/spec/newDocx")
 
 
 describe("docx-hub", function(){
    describe("parser", function(){
         function identify(content, model, done){
-			docx4js.load(newDocx(content)).then(docx=>{
+			DocxHub.load(newDocx(content)).then(docx=>{
                 var ignore={visit(){}}
-                docx.parse(docx4js.createVisitorFactory(function(wordModel){
+                docx.parse(DocxHub.createVisitorFactory(function(wordModel){
 					if(wordModel.type==model)
 						done()
 					else

@@ -1,6 +1,5 @@
 "use strict";
 
-var docx4js=require("docx4js")
 var newDocx=require("docx4js/spec/newDocx")
 var DocxHub=require("../lib")
 
@@ -14,8 +13,7 @@ describe("docx hub", ()=>{
 			expect(!!docx.variantChildren).toBe(true)
 
 			let parsed=false
-			let docx4js=require('docx4js')
-			docx.parse(docx4js.createVisitorFactory(function(identifiedWordModel){
+			docx.parse(DocxHub.createVisitorFactory(function(identifiedWordModel){
 				parsed=true
 			}))
 			expect(parsed).toBe(true)
@@ -36,7 +34,7 @@ describe("docx hub", ()=>{
 			expect(!!assembled.variantChildren).toBe(true)
 
 			let parsed=false
-			assembled.parse(docx4js.createVisitorFactory(function(identifiedWordModel){
+			assembled.parse(DocxHub.createVisitorFactory(function(identifiedWordModel){
 				parsed=true
 			}))
 			expect(parsed).toBe(true)
@@ -49,7 +47,7 @@ describe("docx hub", ()=>{
 		it("can save", done=>{
 			let Part= require("docx4js/lib/openxml/part")
 			spyOn(Part.prototype,'_serialize').and.callThrough()
-			spyOn(docx4js.prototype,'_serialize').and.callThrough()
+			spyOn(DocxHub.prototype,'_serialize').and.callThrough()
 			if($.isNode){
 				let fs="fs",
 					file=require("fs")
@@ -81,7 +79,7 @@ describe("docx hub", ()=>{
 				expect(!!docx.save).toBe(true)
 				docx.save()
 				expect(Part.prototype._serialize).toHaveBeenCalled()
-				expect(docx4js.prototype._serialize).toHaveBeenCalled()
+				expect(DocxHub.prototype._serialize).toHaveBeenCalled()
 				done()
 			}).catch(e=>{fail(e);done()})
 		})
