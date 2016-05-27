@@ -54,7 +54,7 @@
 	  "babel-plugin-transform-class-properties"
     ]
   },
-  "main": "dist/",
+  "main": "lib/",
   "scripts": {
     "build": "babel src -d lib --source-maps inline",
     "dist": "watchify -v -d -r ./lib:docx-template -o dist/index.js  -i jquery",
