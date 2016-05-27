@@ -94,13 +94,13 @@ export default class Document extends BaseDocument{
 		if(transactional){
 			return {
 				save(file){
-					wDoc._serialize()
 					doSave(this.data, file)
 				},
 				parse(){
-					return wDoc.parse(...arguments)
+					return require("docx4js").load(this.data).then(docx=>docx.parse(...arguments))
 				},
 				get data(){
+					wDoc._serialize()
 					return getNewDocxData(wDoc)
 				},
 				variantChildren
@@ -119,7 +119,7 @@ export default class Document extends BaseDocument{
 					doSave(newDocxData,file)
 				},
 				parse(){
-					return require("docx4js").load(newDocxData).parse(...arguments)
+					return require("docx4js").load(newDocxData).then(docx=>docx.parse(...arguments))
 				},
 				data:newDocxData,
 				variantChildren
@@ -135,7 +135,11 @@ export default class Document extends BaseDocument{
 }
 
 function getNewDocxData(wDoc){
-	return $.isNode ? wDoc.raw.generate({type:"nodebuffer"}) : wDoc.raw.generate({type: "blob",mimeType: "application/docx"})
+	if($.isNode)
+		return wDoc.raw.generate({type:"nodebuffer"})
+	var data=wDoc.raw.generate({type: "blob",mimeType: "application/docx"})
+	data.name="[docx-template generated].docx"
+	return data
 }
 
 
