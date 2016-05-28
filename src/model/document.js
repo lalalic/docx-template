@@ -1,6 +1,7 @@
 import esprima from "esprima"
 import escodegen from "escodegen"
 
+import docx4js from "docx4js"
 import BaseDocument from "docx4js/lib/openxml/docx/model/document"
 
 export default class Document extends BaseDocument{
@@ -77,7 +78,6 @@ export default class Document extends BaseDocument{
 		//which makes the class as a visitor
 	}
 
-
 	/**
 	* public API for variant docx
 	*/
@@ -87,23 +87,25 @@ export default class Document extends BaseDocument{
 
 		this.parsedCode.call({}, data, this.wDoc.variants)
 
-		let wDoc=this.wDoc, 
+		let wDoc=this.wDoc,
 			variantChildren=this.variantChildren,
 			doSave=this.wDoc._doSave.bind(this.wDoc)
 
 		if(transactional){
+			wDoc._serialize()
 			return {
 				save(file){
 					doSave(this.data, file)
 				},
 				parse(){
-					return require("docx4js").load(this.data).then(docx=>docx.parse(...arguments))
+					return docx4js.load(this.data).then(docx=>docx.parse(...arguments))
 				},
 				get data(){
-					wDoc._serialize()
 					return getNewDocxData(wDoc)
 				},
-				variantChildren
+				get variantChildren(){
+					return variantChildren
+				}
 			}
 		}else{
 			this.variantChildren.map(variant=>{
@@ -119,10 +121,14 @@ export default class Document extends BaseDocument{
 					doSave(newDocxData,file)
 				},
 				parse(){
-					return require("docx4js").load(newDocxData).then(docx=>docx.parse(...arguments))
+					return docx4js.load(newDocxData).then(docx=>docx.parse(...arguments))
 				},
-				data:newDocxData,
-				variantChildren
+				get data(){
+					return newDocxData
+				},
+				get variantChildren(){
+					return variantChildren
+				}
 			}
 		}
 
@@ -138,8 +144,7 @@ function getNewDocxData(wDoc){
 	if($.isNode)
 		return wDoc.raw.generate({type:"nodebuffer"})
 	var data=wDoc.raw.generate({type: "blob",mimeType: "application/docx"})
-	data.name="[docx-template generated].docx"
+	data.name="a.docx"
+
 	return data
 }
-
-
