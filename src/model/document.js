@@ -92,7 +92,6 @@ export default class Document extends BaseDocument{
 			doSave=this.wDoc._doSave.bind(this.wDoc)
 
 		if(transactional){
-			wDoc._serialize()
 			return {
 				save(file){
 					doSave(this.data, file)
@@ -101,6 +100,7 @@ export default class Document extends BaseDocument{
 					return docx4js.load(this.data).then(docx=>docx.parse(...arguments))
 				},
 				get data(){
+					wDoc._serialize()
 					return getNewDocxData(wDoc)
 				},
 				get variantChildren(){

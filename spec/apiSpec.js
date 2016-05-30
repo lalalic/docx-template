@@ -15,9 +15,11 @@ describe("docx hub", ()=>{
 			let parsed=false
 			docx.parse(DocxHub.createVisitorFactory(function(identifiedWordModel){
 				parsed=true
-			}))
-			expect(parsed).toBe(true)
-			done()
+			})).then(a=>{
+				expect(parsed).toBe(true)
+				done()
+			})
+			
 		}).catch(e=>{fail(e);done()})
 	})
 
@@ -36,10 +38,10 @@ describe("docx hub", ()=>{
 			let parsed=false
 			assembled.parse(DocxHub.createVisitorFactory(function(identifiedWordModel){
 				parsed=true
-			}))
-			expect(parsed).toBe(true)
-
-			done()
+			})).then(a=>{
+				expect(parsed).toBe(true)
+				done()
+			})
 		}).catch(e=>{fail(e);done()})
 	})
 
