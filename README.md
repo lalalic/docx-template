@@ -1,4 +1,4 @@
-# docx-hub
+# docx-template
 create personalized docx from docx template and data
 
 # supported variants following javascript language
@@ -31,16 +31,16 @@ return Promise, resolved with a new docx with following api
 # Example
 
 ## Transactional
-	require("docx-hub")
+	require("docx-template")
 	.assemble(input.files[0],{name:"test"})
 	.then(assembled=>assembled.save)
 
 ## Batch
 
-	let docxhub1=require("docx-hub").parse(input.files[0])
-	docxhub1.assemble({name:"John"})
+	let docx=require("docx-template").parse(input.files[0])
+	docx.assemble({name:"John"})
 		.save()
-	docxhub1.assemble({name:"Mike"})
+	docx.assemble({name:"Mike"})
 		.parse(require("docx2html").factory)
-	dochub1.assemble({name:"Jason"})
+	doc.assemble({name:"Jason"})
 		.save()

@@ -1,5 +1,9 @@
 import Part from "docx4js/lib/openxml/part"
 
+function isNode(){
+	return !!!document
+}
+
 (function(XMLSerializer){
 	Object.assign(Part.prototype,{
 		setChanged(a){
@@ -8,7 +12,7 @@ import Part from "docx4js/lib/openxml/part"
 
 			_changedParts[a ? 'add' : 'remove'](this)
 		},
-		
+
 		_serialize(){
 			this.doc.raw.file(this.name, `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\r\n${(new XMLSerializer()).serializeToString(this.documentElement)}`)
 		},
@@ -67,4 +71,4 @@ import Part from "docx4js/lib/openxml/part"
 			this.doc.getPart(relName).setChanged(true)
 		}
 	})
-})($.isNode ? require("xml"+"dom").XMLSerializer : XMLSerializer)
+})(isNode() ? require("xml"+"dom").XMLSerializer : XMLSerializer)
