@@ -2,60 +2,13 @@ import esprima from "esprima"
 import escodegen from "escodegen"
 
 import docx4js from "docx4js"
-import BaseDocument from "docx4js/lib/openxml/docx/model/document"
 
-export default class Document extends BaseDocument{
-	constructor(){
-		super(...arguments)
-		Object.assign(this.wDoc,function(variantDocument){
-			let _currentContainer,
-				_variantContainers=[],
-				variants={}
-			return {
-					beginVariant(variant){
-						if(_currentContainer &&
-							_currentContainer!=variantDocument)
-							variant.wXml.setAttribute('id',variant.vId)
+import Variant from "./variant"
 
-						if(_currentContainer==variantDocument)
-							variant.isRootChild=true
-
-						switch(variant.type){
-						case 'variant.exp':
-						case 'variant.picture':
-							variant.variantParent=_currentContainer
-							_currentContainer.variantChildren.push(variant)
-							variants[variant.vId]=variant
-						break
-						case 'variant.if':
-						case 'variant.for':
-							variant.variantParent=_currentContainer
-							_currentContainer.variantChildren.push(variant)
-							_variantContainers.push(_currentContainer)
-							variants[variant.vId]=variant
-						case 'document':
-							_currentContainer=variant
-						}
-						return variant
-					},
-
-					endVariant(variant){
-						switch(variant.type){
-						case 'variant.if':
-						case 'variant.for':
-							_currentContainer=_variantContainers.pop()
-						}
-					},
-
-					variants
-			}
-		}(this))
-
-		this.variantParent=null
-		this.variantChildren=[]
-		this.parsedCode=esprima.parse("with(data){with(variants){}}")
-		this.codeBlock=this.parsedCode.body[0].body.body[0].body.body
-		this.wDoc.beginVariant(this)
+export default class Document extends Variant{
+	constructor(node,children,docx){
+		super(node,null, children)
+		this.docx=docx
 	}
 
 	/**
@@ -82,6 +35,13 @@ export default class Document extends BaseDocument{
 	* public API for variant docx
 	*/
 	assemble(data, transactional){
+		let newDocx=this.docx.clone()
+		
+		
+		
+		
+		
+		
 		if(!transactional)
 			this.variantChildren.forEach(a=>a.assembledXml=a.wXml.cloneNode(true) )
 

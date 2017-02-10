@@ -1,13 +1,13 @@
-import RichText from "docx4js/lib/openxml/docx/model/control/richtext"
 import esprima from "esprima"
 
-var id=0
-export default class Variant extends RichText{
-	constructor(){
-		super(...arguments)
-		this.docxPart=this.wDoc.parseContext.part.current
-		this.vId=`__${this.constructor.type.split(".").pop()}_${id++}`
-		this.parsedCode=arguments[3]
+export default class Variant{
+	constructor(node,code,children){
+		this.node=node
+		if(children)
+			(this.children=children).forEach(a=>a.parent=this)
+		
+		this.vId=`__${this.constructor.type}_${node.id}`
+		this.parsedCode=code
 		this._initVariant()
 	}
 
@@ -103,5 +103,49 @@ export default class Variant extends RichText{
 	clear(){
 		Array.from(this.assembledXml.$1('sdtContent').childNodes)
 			.forEach(child=>child.parentNode.removeChild(child))
+	}
+	
+	toJs(){
+		return this.children.reduce((state, child)=>{
+			state.push({
+				"type": "ExpressionStatement",
+				"expression": {
+					"type": "CallExpression",
+					"callee": {
+						"type": "MemberExpression",
+						"computed": false,
+						"object": {
+							"type": "Identifier",
+							"name": this.vId
+						},
+						"property": {
+							"type": "Identifier",
+							"name": "pre_assemble"
+						}
+					},
+					"arguments": []
+				}
+			})
+			state.push(child.toJs())
+			state.push({
+				"type": "ExpressionStatement",
+				"expression": {
+					"type": "CallExpression",
+					"callee": {
+						"type": "MemberExpression",
+						"computed": false,
+						"object": {
+							"type": "Identifier",
+							"name": this.vId
+						},
+						"property": {
+							"type": "Identifier",
+							"name": "post_assemble"
+						}
+					},
+					"arguments": []
+				}
+			})
+		},[])
 	}
 }

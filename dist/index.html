@@ -3,18 +3,13 @@
 <head>
 	<script src="index.js"></script>
 	<script>
+		var docxTemplate=require("docx-template").default
+		
 		function test(input){
-
-			var d=data.value.trim()
-			if(d.length==0)
-				d="{}"
-			require("docx-template").assemble(input.files[0],JSON.parse(d)).then(function(assembled){
-				assembled.save()
-				input.value=""
-			}).catch(function(e){
-				input.value=""
-				alert(e.message)
-			})
+			docxTemplate.parse(input.files[0])
+				.then(function(varDoc){
+					input.value=""
+				})
 		}
 	</script>
 </head>
