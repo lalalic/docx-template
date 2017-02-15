@@ -2,16 +2,17 @@ import Variant from "./variant"
 
 export default class If extends Variant{
 	static get type(){return"variant.if"}
-	_initVariant(){
-		super._initVariant()
+	
+	constructor(){
+		super(...arguments)
 		
-		this.codeBlock=this.parsedCode.body[0].consequent.body
-		while(!Array.isArray(this.codeBlock))//if()with(){}
-			this.codeBlock=this.codeBlock.body
+		let codeBlock=this.code.body[0].consequent.body
+		while(!Array.isArray(codeBlock))//if()with(){}
+			codeBlock=codeBlock.body
 			
 		
 		/*if(...){assemble(true),...}else assemble(false)*/
-		this.codeBlock.push({
+		codeBlock.push({
 			"type": "ExpressionStatement",
 			"expression": {
 				"type": "CallExpression",
@@ -37,7 +38,7 @@ export default class If extends Variant{
 			}
 		})
 		
-		this.parsedCode.body[0].alternate={
+		this.code.body[0].alternate={
 			"type": "ExpressionStatement",
 			"expression": {
 				"type": "CallExpression",
@@ -71,5 +72,37 @@ export default class If extends Variant{
 		}else{
 			//keep it
 		}
+	}
+	
+	js(){
+		let codeBlock=this.code.body[0].consequent.body
+		while(!Array.isArray(codeBlock))//if()with(){}
+			codeBlock=codeBlock.body
+			
+		return [
+			 Expression.PRE_ASSEMBLE(this)
+			,{
+				"type": "ExpressionStatement",
+				"expression": {
+					"type": "CallExpression",
+					"callee": {
+						"type": "MemberExpression",
+						"computed": false,
+						"object": {
+							"type": "Identifier",
+							"name": this.vId
+						},
+						"property": {
+							"type": "Identifier",
+							"name": "assemble"
+						}
+					},
+					"arguments": [
+						this.code.body[0]
+					]
+				}
+			}
+			,Expression.POST_ASSEMBLE(this)
+		]
 	}
 }

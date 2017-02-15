@@ -14,36 +14,45 @@ export default class Variant{
 	}
 
 	assemble(docx,){
-		this.docxPart.setChanged(true)
+		
 	}
 	
 	post_assemble(){
 		
 	}
 
-	toJs(){
-		return this.children.reduce((state, child)=>{
-			state.push({
-				"type": "ExpressionStatement",
-				"expression": {
-					"type": "CallExpression",
-					"callee": {
-						"type": "MemberExpression",
-						"computed": false,
-						"object": {
-							"type": "Identifier",
-							"name": this.vId
-						},
-						"property": {
-							"type": "Identifier",
-							"name": "pre_assemble"
-						}
+	js(){
+		return [
+			Expression.PRE_ASSEMBLE(this)
+			
+			,Expression.POST_ASSEMBLE(this)
+		]
+	}
+	
+	static PRE_ASSEMBLE(variant){
+		return {
+			"type": "ExpressionStatement",
+			"expression": {
+				"type": "CallExpression",
+				"callee": {
+					"type": "MemberExpression",
+					"computed": false,
+					"object": {
+						"type": "Identifier",
+						"name": variant.vId
 					},
-					"arguments": []
-				}
-			})
-			state.push(child.toJs())
-			state.push({
+					"property": {
+						"type": "Identifier",
+						"name": "pre_assemble"
+					}
+				},
+				"arguments": []
+			}
+		}
+	}
+	
+	static POST_ASSEMBLE(variant){
+		return {
 				"type": "ExpressionStatement",
 				"expression": {
 					"type": "CallExpression",
@@ -52,7 +61,7 @@ export default class Variant{
 						"computed": false,
 						"object": {
 							"type": "Identifier",
-							"name": this.vId
+							"name": variant.vId
 						},
 						"property": {
 							"type": "Identifier",
@@ -61,7 +70,6 @@ export default class Variant{
 					},
 					"arguments": []
 				}
-			})
-		},[])
+			}
 	}
 }

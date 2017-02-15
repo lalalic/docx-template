@@ -5,9 +5,6 @@ export default class Document{
 	constructor(docx,children){
 		this.docx=docx
 		this.children=children
-		this.code=esprima.parse("with(data){with(variants){}}")
-		let codeBlock=this.code.body[0].body.body[0].body.body
-		children.forEach(a=>codeBlock.push(a.code))
 	}
 
 	assemble(data){
@@ -28,6 +25,10 @@ export default class Document{
 	}
 	
 	get engine(){
+		let code=esprima.parse("with(data){with(variants){}}")
+		let codeBlock=code.body[0].body.body[0].body.body
+		
+		children.forEach(a=>codeBlock.push(a.js()))
 		return new Function("data,variants",escodegen.generate(this.parsedCode))
 	}
 	
