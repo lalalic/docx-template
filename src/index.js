@@ -9,7 +9,6 @@ export class DocxTemplate extends docx4js{
 	static parse(file){
         return this.load(file).then(docx=>{
 			let handler=new VariantHandler(docx)
-			debugger
 			docx.parse(handler, DocxTemplate.identify)
 			return handler
         })
@@ -122,7 +121,7 @@ class VariantHandler extends ModelHandler{
 			case "inline.if":
 				return new IfStatement(node,code,children)
 			case "document":
-				this.varDoc=new Document(node,children,docx)
+				this.varDoc=new Document(docx,children)
 				return this
 			default:
 				return children

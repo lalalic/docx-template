@@ -75,4 +75,8 @@ export default class Expression extends Variant{
 		}
 		super.assemble(...arguments)
 	}
+	
+	toJs(){
+		
+	}
 }

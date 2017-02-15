@@ -32,7 +32,7 @@
     "watchify": ">=3.0.0 <4.0.0"
   },
   "dependencies": {
-    "docx4js": "git://github.com/lalalic/docx4js.git#react",
+    "docx4js": "git+https://github.com/lalalic/docx4js.git#react",
     "escodegen": "^1.8.0",
     "esprima": "^2.7.2",
     "jszip": "^2.6.0",
