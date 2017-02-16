@@ -1,7 +1,7 @@
-import Variant from "./variant"
+import Expression from "./_exp"
 
-export default class Picture extends Variant{
-	static get type(){return"variant.picture"}
+export default class Picture extends Expression{
+	static type="variant.picture"
 
 	assemble(value){
 		if(value==null || value==undefined || value==''){
@@ -44,33 +44,5 @@ export default class Picture extends Variant{
 			    xmlHTTP.send();
 			}
 		})
-	}
-	
-	js(){
-		return [
-			 Expression.PRE_ASSEMBLE(this)
-			,{
-				"type": "ExpressionStatement",
-				"expression": {
-					"type": "CallExpression",
-					"callee": {
-						"type": "MemberExpression",
-						"computed": false,
-						"object": {
-							"type": "Identifier",
-							"name": this.vId
-						},
-						"property": {
-							"type": "Identifier",
-							"name": "assemble"
-						}
-					},
-					"arguments": [
-						this.code.body[0].expression
-					]
-				}
-			}
-			,Expression.POST_ASSEMBLE(this)
-		]
 	}
 }

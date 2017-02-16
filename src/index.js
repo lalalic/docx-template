@@ -1,7 +1,10 @@
 import esprima from "esprima"
 import docx4js from "docx4js"
 
+import VariantHandler from "./variant-handler"
+
 const VARIANTS="control.picture,control.text,block,inline".split(",") 
+
 export class DocxTemplate extends docx4js{
 	/**
 	* entry: parse template as a variant document, then you can assemble with data
@@ -93,43 +96,3 @@ export class DocxTemplate extends docx4js{
 }
 
 export default DocxTemplate
-
-import ModelHandler from "docx4js/lib/openxml/docx/model-handler"
-import Document from "./model/document"
-import Expression from "./model/_exp"
-import If from "./model/_if"
-import For from "./model/_for"
-import Picture from "./model/_picture"
-
-class VariantHandler extends ModelHandler{
-	constructor(docx){
-		super()
-		this.docx=docx
-	}
-	
-	createElement(type,{code,node},children){
-		console.log(type)
-		switch(type){
-			case "control.picture.var":
-				return new Picture(node,code)
-			case "control.text.var":
-				return new Expression(node,code)
-			case "block.for":
-			case "inline.for":
-				return new ForStatement(node,code,children)
-			case "block.if":
-			case "inline.if":
-				return new IfStatement(node,code,children)
-			case "document":
-				this.varDoc=new Document(docx,children)
-				return this
-			default:
-				return children
-		}
-		
-	}
-
-	assemble(data,transactional){
-		return this.varDoc.assemble(...arguments)
-	}
-}

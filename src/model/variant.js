@@ -1,12 +1,12 @@
-import esprima from "esprima"
-
 export default class Variant{
 	constructor(node,code,children){
 		this.node=node
 		this.code=code
-		this.children=children
-		
-		this.vId=`__${this.constructor.type}_${node.id}`
+		this.children=children||[]
+	}
+	
+	get id(){
+		return `_${this.node.id}`
 	}
 
 	pre_assemble(){
@@ -24,7 +24,8 @@ export default class Variant{
 	js(){
 		return [
 			Expression.PRE_ASSEMBLE(this)
-			
+			,this.code
+			,...this.children.map(a=>a.js())
 			,Expression.POST_ASSEMBLE(this)
 		]
 	}
@@ -39,7 +40,7 @@ export default class Variant{
 					"computed": false,
 					"object": {
 						"type": "Identifier",
-						"name": variant.vId
+						"name": variant.id
 					},
 					"property": {
 						"type": "Identifier",
@@ -61,7 +62,7 @@ export default class Variant{
 						"computed": false,
 						"object": {
 							"type": "Identifier",
-							"name": variant.vId
+							"name": variant.id
 						},
 						"property": {
 							"type": "Identifier",

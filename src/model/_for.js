@@ -1,7 +1,7 @@
 import Variant from "./variant"
 
 export default class For extends Variant{
-	static get type(){return"variant.for"}
+	static type="variant.for"
 	constructor(){
 		super(...arguments)
 		
@@ -18,7 +18,7 @@ export default class For extends Variant{
 					"computed": false,
 					"object": {
 						"type": "Identifier",
-						"name": this.vId
+						"name": this.id
 					},
 					"property": {
 						"type": "Identifier",
@@ -45,31 +45,5 @@ export default class For extends Variant{
 	post_assemble(){
 		delete this.templates
 		super.post_assemble()
-	}
-	
-	js(){
-		Expression.PRE_ASSEMBLE(this)
-		,{
-			"type": "ExpressionStatement",
-			"expression": {
-				"type": "CallExpression",
-				"callee": {
-					"type": "MemberExpression",
-					"computed": false,
-					"object": {
-						"type": "Identifier",
-						"name": this.vId
-					},
-					"property": {
-						"type": "Identifier",
-						"name": "assemble"
-					}
-				},
-				"arguments": [
-					this.code.body[0]
-				]
-			}
-		}
-		,Expression.POST_ASSEMBLE(this)
 	}
 }

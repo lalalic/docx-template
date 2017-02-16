@@ -1,7 +1,7 @@
 import Variant from "./variant"
 
 export default class If extends Variant{
-	static get type(){return"variant.if"}
+	static type="variant.if"
 	
 	constructor(){
 		super(...arguments)
@@ -21,7 +21,7 @@ export default class If extends Variant{
 					"computed": false,
 					"object": {
 						"type": "Identifier",
-						"name": this.vId
+						"name": this.id
 					},
 					"property": {
 						"type": "Identifier",
@@ -47,7 +47,7 @@ export default class If extends Variant{
 					"computed": false,
 					"object": {
 						"type": "Identifier",
-						"name": this.vId
+						"name": this.id
 					},
 					"property": {
 						"type": "Identifier",
@@ -72,37 +72,5 @@ export default class If extends Variant{
 		}else{
 			//keep it
 		}
-	}
-	
-	js(){
-		let codeBlock=this.code.body[0].consequent.body
-		while(!Array.isArray(codeBlock))//if()with(){}
-			codeBlock=codeBlock.body
-			
-		return [
-			 Expression.PRE_ASSEMBLE(this)
-			,{
-				"type": "ExpressionStatement",
-				"expression": {
-					"type": "CallExpression",
-					"callee": {
-						"type": "MemberExpression",
-						"computed": false,
-						"object": {
-							"type": "Identifier",
-							"name": this.vId
-						},
-						"property": {
-							"type": "Identifier",
-							"name": "assemble"
-						}
-					},
-					"arguments": [
-						this.code.body[0]
-					]
-				}
-			}
-			,Expression.POST_ASSEMBLE(this)
-		]
 	}
 }
