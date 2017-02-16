@@ -3,7 +3,7 @@ import docx4js from "docx4js"
 
 describe("docx-template api", function(){
 	const file=`${__dirname}/files/api.docx`
-	
+
 	it("can parse, and return {assemble, variantChildren}", ()=>{
 		expect(DocxTemplate.parse).toBeDefined()
 		spyOn(DocxTemplate,"identify")
