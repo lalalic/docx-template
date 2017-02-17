@@ -31,7 +31,10 @@ export default class Document{
 	js(options){
 		let code=esprima.parse("with(data){with(variants){}}")
 		let codeBlock=code.body[0].body.body[0].body.body
-		this.children.forEach(a=>codeBlock.push(a.js()))
+		this.children.forEach(a=>{
+			let stats=a.js()
+			codeBlock.splice(codeBlock.length,0,...stats)
+		})
 
 		return options==undefined ? code : escodegen.generate(code,options)
 	}

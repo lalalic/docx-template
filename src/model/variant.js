@@ -8,6 +8,11 @@ export default class Variant{
 	get id(){
 		return `_${this.node.id}`
 	}
+	
+	get rawCode(){
+		return this.node.children.find(a=>a.name=="w:sdtPr")
+			.children.find(a=>a.name=="w:tag").attribs["w:val"].trim()
+	}
 
 	pre_assemble(){
 		
@@ -23,10 +28,10 @@ export default class Variant{
 
 	js(){
 		return [
-			Expression.PRE_ASSEMBLE(this)
+			Variant.PRE_ASSEMBLE(this)
 			,this.code
 			,...this.children.map(a=>a.js())
-			,Expression.POST_ASSEMBLE(this)
+			,Variant.POST_ASSEMBLE(this)
 		]
 	}
 	
@@ -48,7 +53,11 @@ export default class Variant{
 					}
 				},
 				"arguments": []
-			}
+			},
+			leadingComments:[{
+				type:"Block",
+				value:`type: ${this.constructor.type}, raw:${this.rawCode}`
+			}]
 		}
 	}
 	

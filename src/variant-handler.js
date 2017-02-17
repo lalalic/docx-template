@@ -13,7 +13,7 @@ export class VariantHandler extends ModelHandler{
 		this.docx=docx
 	}
 
-	createElement(type,{code,node},children){
+	createElement(type,{code,node,rawCode},children){
 		if(children)
 			children=children.filter(a=>a instanceof Variant)
 
@@ -24,10 +24,10 @@ export class VariantHandler extends ModelHandler{
 				return new Expression(node,code)
 			case "block.for":
 			case "inline.for":
-				return new ForStatement(node,code,children)
+				return new For(node,code,children)
 			case "block.if":
 			case "inline.if":
-				return new IfStatement(node,code,children)
+				return new If(node,code,children)
 			case "document":
 				this.varDoc=new Document(this.docx,children)
 				return this

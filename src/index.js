@@ -10,11 +10,15 @@ export class DocxTemplate extends docx4js{
 	* entry: parse template as a variant document, then you can assemble with data
 	**/
 	static parse(file){
-        return this.load(file).then(docx=>{
+		const _parse=docx=>{
 			let handler=new VariantHandler(docx)
 			docx.parse(handler, DocxTemplate.identify)
-			return handler
-        })
+			return handler.varDoc
+        }
+		if(file instanceof docx4js)
+			return Promise.resolve(_parse(file))
+		
+        return this.load(file).then(_parse)
     }
 
     static assemble(file,data){
@@ -24,7 +28,8 @@ export class DocxTemplate extends docx4js{
 
 	static isExp(text){
 		text=text.trim()
-		if(text.charAt(0) == '$' && text.charAt(1) == '{' && text.charAt(text.length - 1) == '}'){
+		let len=text.length
+		if(len>3 && text[0] == '$' && text[1] == '{' && text[len - 1] == '}'){
 			text=text.substring(2,text.length-1).trim()
 			if(text.length)
 				return text
@@ -38,12 +43,17 @@ export class DocxTemplate extends docx4js{
 			return null
 
 		let model=docx4js.OfficeDocument.identify(...arguments)
+		
+		
 		if(typeof(model)=="string" || VARIANTS.indexOf(model.type)==-1)
 			return model
 
-		let tag=[node.children.find(a=>a.name=="w:sdtPr")]
-			.find(a=>a.name=="w:tag")
-
+		let sdtPr=node.children.find(a=>a.name=="w:sdtPr")
+		if(!sdtPr)
+			return model
+		
+		let tag=sdtPr.children.find(a=>a.name=="w:tag")
+		
 		if(!tag)
 			return model
 
@@ -52,6 +62,8 @@ export class DocxTemplate extends docx4js{
 			return model
 
 		tag=tag.trim()
+		
+		model.rawCode=tag
 		switch(model.type){
 			case "control.picture":
 			case "control.text": {
@@ -60,7 +72,7 @@ export class DocxTemplate extends docx4js{
 					return model
 
 				model.type=`${model.type}.exp`
-				model.code=exp
+				model.code=esprima.parse(exp)
 				return model
 			}
 			case "block":
@@ -90,7 +102,7 @@ export class DocxTemplate extends docx4js{
 				}
 			}
 		}
-
+		delete model.rawCode
 		return model
 	}
 }

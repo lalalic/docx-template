@@ -5,6 +5,7 @@ export default class Expression extends Variant{
 	
 	constructor(){
 		super(...arguments)
+
 		this.code={
 			"type": "ExpressionStatement",
 			"expression": {
