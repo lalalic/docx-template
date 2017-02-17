@@ -16,11 +16,11 @@ export class VariantHandler extends ModelHandler{
 	createElement(type,{code,node},children){
 		if(children)
 			children=children.filter(a=>a instanceof Variant)
-			
+
 		switch(type){
-			case "control.picture.var":
+			case "control.picture.exp":
 				return new Picture(node,code)
-			case "control.text.var":
+			case "control.text.exp":
 				return new Expression(node,code)
 			case "block.for":
 			case "inline.for":

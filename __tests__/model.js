@@ -1,28 +1,33 @@
 import cheer from "cheerio"
+import DocxTemplate from "docx-template"
 
 describe("docx template models", function(){
    describe("parser", function(){
         function identify(content, model){
-
+            let node=cheer.load(content,{xmlMode:true})
+            let identified=DocxTemplate.identify(node("w\\:sdt").get(0),{content:node})
+            console.dir(identified)
+            expect(identified.type).toBe(model)
+            return identified
         }
 
-        it("can identify if control: if(.*)", function(){
-			identify(contents['if'],"variant.if")
+        fit("can identify if control: if(.*)", function(){
+			identify(contents['if'],"block.if")
         })
 
         it("can identify for control:for(var i=10;i>0;i--)", function(){
-            identify(contents['for'],"variant.for")
+            identify(contents['for'],"block.for")
         })
 
         it("can identify expression control", function(){
-            identify(contents['var'],"variant.exp")
+            identify(contents['exp'],"control.variant.exp")
         })
 
         it("can identify picture", function(){
-            identify(contents['picture'],"variant.picture")
+            identify(contents['picture'],"control.picture.exp")
         })
 
-        it("can load image for variant.picture", done=>{
+        it.skip("can load image for variant.picture", done=>{
             var Picture=require("../lib/model/_picture")
             var getImageData=Picture.prototype.getImageData
             var url=$.isNode ? "http://parse.com/assets/images/server/logo.svg" : "/"
@@ -32,7 +37,7 @@ describe("docx template models", function(){
 
     var contents={
         "if":`
-            <w:sdt>
+            <w:sdt id="1">
                 <w:sdtPr>
                     <w:alias w:val="a==1"/>
                     <w:tag w:val="if(a==1)"/>
@@ -51,7 +56,7 @@ describe("docx template models", function(){
                 </w:sdtContent>
             </w:sdt>`,
         "for":`
-            <w:sdt>
+            <w:sdt id="1">
                 <w:sdtPr>
                     <w:alias w:val="loop 10 times"/>
                     <w:tag w:val="for(var i=10;i>0;i--)"/>
@@ -69,25 +74,25 @@ describe("docx template models", function(){
                     </w:p>
                 </w:sdtContent>
             </w:sdt>`,
-        "var":`
-            <w:sdt>
+        "exp":`
+            <w:sdt id="1">
                 <w:sdtPr>
-                    <w:id w:val="922459404"/>
-                    <w:placeholder>
-                        <w:docPart w:val="DefaultPlaceholder_1082065158"/>
-                    </w:placeholder>
+                  <w:alias w:val="${"${a+b}"}"/>
+                  <w:tag w:val="${"${a+b}"}"/>
+                  <w:id w:val="12965037"/>
+                  <w:picture/>
                 </w:sdtPr>
                 <w:sdtEndPr/>
                 <w:sdtContent>
                     <w:p>
                         <w:r>
-                            <w:t>${"${name}"}</w:t>
+                            <w:t>${"${a+b}"}</w:t>
                         </w:r>
                     </w:p>
                 </w:sdtContent>
             </w:sdt>`,
         "picture":`
-            <w:sdt>
+            <w:sdt id="1">
               <w:sdtPr>
                 <w:alias w:val="${"${photo}"}"/>
                 <w:tag w:val="${"${photo}"}"/>

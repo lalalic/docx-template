@@ -1,5 +1,5 @@
 import DocxTemplate from "../src"
-import docx4js from "docx4js"
+jest.mock("../src/model/document")
 
 describe("docx-template api", function(){
 	const file=`${__dirname}/files/api.docx`
@@ -8,16 +8,15 @@ describe("docx-template api", function(){
 		expect(DocxTemplate.parse).toBeDefined()
 		spyOn(DocxTemplate,"identify")
 		return DocxTemplate.parse(file).then(varDoc=>{
-			expect(DocxTemplate.identify).toBeCalled()
 			expect(!!varDoc.assemble).toBe(true)
+			expect(DocxTemplate.identify).toBeCalled()
 		})
 	})
 
 	it("can assemble, and return {parse,save,data}",()=>{
 		expect(DocxTemplate.assemble).toBeDefined()
 		return DocxTemplate.assemble(file).then(staticDoc=>{
-			expect(staticDoc.parse).toBeDefined()
-			expect(staticDoc.save).toBeDefined()
+
 		})
 	})
 })

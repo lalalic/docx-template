@@ -8,7 +8,7 @@ export default class Document{
 	}
 
 	assemble(data){
-		return this.engine.call(this.docx.clone(), data, this.variants)
+		return this.engine.call({}, data, this.variants)
 	}
 
 	get variants(){

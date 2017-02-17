@@ -3,7 +3,7 @@ import docx4js from "docx4js"
 
 import VariantHandler from "./variant-handler"
 
-const VARIANTS="control.picture,control.text,block,inline".split(",") 
+const VARIANTS="control.picture,control.text,block,inline".split(",")
 
 export class DocxTemplate extends docx4js{
 	/**
@@ -19,9 +19,9 @@ export class DocxTemplate extends docx4js{
 
     static assemble(file,data){
         return this.parse(file)
-			.then(varDoc=>varDoc.assemble(data,true))
+			.then(varDoc=>varDoc.assemble(data))
     }
-	
+
 	static isExp(text){
 		text=text.trim()
 		if(text.charAt(0) == '$' && text.charAt(1) == '{' && text.charAt(text.length - 1) == '}'){
@@ -31,26 +31,26 @@ export class DocxTemplate extends docx4js{
 		}
 		return false
 	}
-	
+
 	static identify(node, officeDocument){
 		let tagName=node.name.split(":").pop()
 		if(tagName=="styles" || tagName=="numbering")
 			return null
-		
+
 		let model=docx4js.OfficeDocument.identify(...arguments)
 		if(typeof(model)=="string" || VARIANTS.indexOf(model.type)==-1)
 			return model
 
 		let tag=[node.children.find(a=>a.name=="w:sdtPr")]
 			.find(a=>a.name=="w:tag")
-			
+
 		if(!tag)
 			return model
-		
+
 		tag=tag.attribs["w:val"]
 		if(!tag)
 			return model
-		
+
 		tag=tag.trim()
 		switch(model.type){
 			case "control.picture":
@@ -58,8 +58,8 @@ export class DocxTemplate extends docx4js{
 				let exp=DocxTemplate.isExp(tag)
 				if(!exp)
 					return model
-				
-				model.type=`${model.type}.var`
+
+				model.type=`${model.type}.exp`
 				model.code=exp
 				return model
 			}
@@ -90,7 +90,7 @@ export class DocxTemplate extends docx4js{
 				}
 			}
 		}
-		
+
 		return model
 	}
 }
