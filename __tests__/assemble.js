@@ -122,7 +122,7 @@ describe("assemble", function(){
 		})
 
 		describe("picture", function(){
-			fit("picture",()=>{
+			it("picture",()=>{
 				return template(contents.picture()).then(varDoc=>{
 					let _pic=varDoc.children[0]
 					let p=Promise.resolve([1,2,3])
@@ -137,6 +137,33 @@ describe("assemble", function(){
 						let rid=blip.attr("r:embed")
 						expect(rid).toMatch(/^rId\d?/)
 					})
+				})
+			})
+		})
+
+		describe("if", function(){
+			it("if(true)", function(){
+				return template(contents.if()).then(varDoc=>{
+					let staticDoc=varDoc.assemble({})
+					expect(staticDoc.officeDocument.content.text()).toMatch("hello")
+				})
+			})
+
+			it("if(false)", function(){
+				return template(contents.if(null,false)).then(varDoc=>{
+					let staticDoc=varDoc.assemble({})
+					expect(staticDoc.officeDocument.content.text()).toBe("")
+				})
+			})
+		})
+
+		fdescribe("for", function(){
+			it("for(var i=0;i<3;i++)", function(){
+				return template(contents.for(null,"for(var i=0;i<3;i++)")).then(varDoc=>{
+					let staticDoc=varDoc.assemble()
+					let text=staticDoc.officeDocument.content.text()
+					expect(text).toBe("hello.hello.hello.")
+					console.log(text)
 				})
 			})
 		})

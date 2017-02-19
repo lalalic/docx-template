@@ -26,11 +26,7 @@ export default class If extends Variant{
 	}
 
 	assemble(docx, node, satified){
-		if(!satified){
-			this.clear()
-			super.assemble(...arguments)
-		}else{
-			//keep it
-		}
+		if(!satified)
+			node.remove()
 	}
 }

@@ -18,19 +18,14 @@ export default class For extends Variant{
 	}
 
 	assembling(){
-		var sdtContent=this.assembledXml.$1('sdtContent')
-		this.templates=sdtContent.childNodes.asArray()
-		this.templates.forEach(a=>sdtContent.removeChild(a))
+
 	}
 
 	assemble(){
-		var sdtContent=this.assembledXml.$1('sdtContent')
-		this.templates.forEach(a=>sdtContent.appendChild(a.cloneNode(true)))
-		super.assemble(...arguments)
+		
 	}
 
 	assembled(){
-		delete this.templates
-		super.post_assemble()
+
 	}
 }
