@@ -8,15 +8,22 @@ export default class Document{
 	}
 
 	assemble(data){
-		return this.engine.call({}, data, this.variants)
+		let $=this.docx.officeDocument.content
+		try{
+			let targetDoc=this.docx.clone()
+			this.engine.call(targetDoc, data, this.variants, targetDoc.officeDocument.content)
+			return targetDoc
+		}catch(error){
+			console.error(error)
+		}
 	}
 
 	get variants(){
 		function reduce(state,next){
+			state[next.id]=next
 			if(next.children)
 				next.children.reduce(reduce,state)
-			else
-				state[next.id]=next
+
 			return state
 		}
 
@@ -25,16 +32,14 @@ export default class Document{
 	}
 
 	get engine(){
-		return new Function("data,variants",this.js({}))
+		let code=this.js({})
+		return new Function("data={},variants, $, _safe",code)
 	}
 
 	js(options){
 		let code=esprima.parse("with(data){with(variants){}}")
 		let codeBlock=code.body[0].body.body[0].body.body
-		this.children.forEach(a=>{
-			let stats=a.js()
-			codeBlock.splice(codeBlock.length,0,...stats)
-		})
+		this.children.forEach(a=>codeBlock.push(a.code))
 
 		return options==undefined ? code : escodegen.generate(code,options)
 	}

@@ -17,7 +17,7 @@ export class DocxTemplate extends docx4js{
         }
 		if(file instanceof docx4js)
 			return Promise.resolve(_parse(file))
-		
+
         return this.load(file).then(_parse)
     }
 
@@ -43,17 +43,17 @@ export class DocxTemplate extends docx4js{
 			return null
 
 		let model=docx4js.OfficeDocument.identify(...arguments)
-		
-		
+
+
 		if(typeof(model)=="string" || VARIANTS.indexOf(model.type)==-1)
 			return model
 
 		let sdtPr=node.children.find(a=>a.name=="w:sdtPr")
 		if(!sdtPr)
 			return model
-		
+
 		let tag=sdtPr.children.find(a=>a.name=="w:tag")
-		
+
 		if(!tag)
 			return model
 
@@ -62,7 +62,7 @@ export class DocxTemplate extends docx4js{
 			return model
 
 		tag=tag.trim()
-		
+
 		model.rawCode=tag
 		switch(model.type){
 			case "control.picture":

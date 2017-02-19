@@ -1,9 +1,9 @@
 export default {
-	"if":a=>`
+	"if":(a,b=true)=>`
 		<w:sdt>
 			<w:sdtPr>
 				<w:alias w:val="a==1"/>
-				<w:tag w:val="if(true)"/>
+				<w:tag w:val="if(${b})"/>
 				<w:id w:val="922459404"/>
 				<w:placeholder>
 					<w:docPart w:val="DefaultPlaceholder_1082065158"/>
@@ -40,8 +40,8 @@ export default {
 	"exp":a=>`
 		<w:sdt>
 			<w:sdtPr>
-				<w:alias w:val="${a||"${photo}"}"/>
-				<w:tag w:val="${a||"${photo}"}"/>
+				<w:alias w:val="${a||"${name}"}"/>
+				<w:tag w:val="${a||"${name}"}"/>
 				<w:id w:val="12965037"/>
 				<w:text/>
 			</w:sdtPr>
@@ -88,7 +88,7 @@ export default {
 								</pic:cNvPicPr>
 							  </pic:nvPicPr>
 							  <pic:blipFill>
-								<a:blip r:embed="rId7">
+								<a:blip r:embed="unknown">
 								  <a:extLst>
 									<a:ext uri="{28A0092B-C50C-407E-A947-70E740481C1C}">
 									  <a14:useLocalDpi xmlns:a14="http://schemas.microsoft.com/office/drawing/2010/main" val="0"/>

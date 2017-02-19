@@ -8,7 +8,6 @@ describe("docx-template api", function(){
 		expect(DocxTemplate.parse).toBeDefined()
 		spyOn(DocxTemplate,"identify")
 		return DocxTemplate.parse(file).then(varDoc=>{
-			expect(!!varDoc.assemble).toBe(true)
 			expect(DocxTemplate.identify).toBeCalled()
 		})
 	})

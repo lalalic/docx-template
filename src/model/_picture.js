@@ -3,21 +3,16 @@ import Expression from "./_exp"
 export default class Picture extends Expression{
 	static type="variant.picture"
 
-	assemble(value){
+	assemble(docx, node, value){
 		if(value==null || value==undefined || value==''){
-			this.assembledXml.parentNode.removeChild(this.assembledXml)
+			node.remove()
 		}else{
-			let blip=this.assembledXml.$1('graphicData blip')
-
-			this.getImageData(value).then(data=>{
-				let id=this.docxPart.addRel({
-					type:"http://schemas.openxmlformats.org/officeDocument/2006/relationships/image",
-					target:data
-				})
-				blip.setAttribute("r:embed", id)
+			return this.getImageData(value).then(data=>{
+				let id=docx.officeDocument.addImage(data)
+				let blip=node.find('a\\:graphic a\\:blip')
+				blip.attr("r:embed", id)
 			})
 		}
-		super.assemble(...arguments)
 	}
 
 	getImageData(url){
@@ -26,7 +21,7 @@ export default class Picture extends Expression{
 				let requestModel="request"
 				let request=require(requestModel).defaults({ encoding: null });
 				request.get(url, (error,res,body)=>{
-					if (!error && res.statusCode == 200) 
+					if (!error && res.statusCode == 200)
 						resolve(new Buffer(body))
 					else
 						reject(error)

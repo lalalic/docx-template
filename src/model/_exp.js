@@ -1,45 +1,21 @@
+import esprima from "esprima"
 import Variant from "./variant"
 
 export default class Expression extends Variant{
 	static type="variant.exp"
-	
+
 	constructor(){
 		super(...arguments)
-
-		this.code={
-			"type": "ExpressionStatement",
-			"expression": {
-				"type": "CallExpression",
-				"callee": {
-					"type": "MemberExpression",
-					"computed": false,
-					"object": {
-						"type": "Identifier",
-						"name": this.id
-					},
-					"property": {
-						"type": "Identifier",
-						"name": "assemble"
-					}
-				},
-				"arguments": [
-					this.code.body[0].expression
-				]
-			}
-		}
+		let exp=this.code.body[0].expression
+		this.code=esprima.parse(`${this.id}.assemble(this,$('#${this.id}'))`).body[0]
+		this.code.expression.arguments.push(exp)
 	}
 
-	assemble(value){
+	assemble(docx, node, value){
 		if(value==null || value==undefined || value==''){
-			this.assembledXml.$('t').forEach(t=>t.remove())
+			node.remove()
 		}else{
-			this.assembledXml.$('t').forEach((t,i)=>{
-				if(i==0)
-					t.textContent=value
-				else
-					t.remove()
-			})
+			node.find('w\\:t').remove(i=>i!=0).first().text(value)
 		}
-		super.assemble(...arguments)
 	}
 }
