@@ -1,3 +1,8 @@
+describe("",function(){
+	it("",function(){
+		
+	})
+})
 export default {
 	"if":(a,b=true)=>`
 		<w:sdt>

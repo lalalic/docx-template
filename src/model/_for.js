@@ -10,22 +10,29 @@ export default class For extends Variant{
 		while(!Array.isArray(codeBlock))//for()with(){}
 			codeBlock=codeBlock.body
 
-		codeBlock.push(esprima.parse(`${this.id}.assemble(this,$('${this.id}'))`).body[0])
-
 		this.children.forEach(a=>codeBlock.push(a.code))
+		codeBlock.push(esprima.parse(`${this.id}.assemble(this,$('#${this.id}'))`).body[0])
+		
 		this.code.body.unshift(esprima.parse(`${this.id}.assembling(this,$('#${this.id}'))`).body[0])
 		this.code.body.push(esprima.parse(`${this.id}.assembled(this,$('#${this.id}'))`).body[0])
 	}
 
-	assembling(){
-
+	assembling(docx,node){
+		this._template=node.clone()
+		this._results=[]
 	}
 
-	assemble(){
+	//loop run after each child assembled
+	assemble(docx,node){
+		this._results.push(node)
+		node.replaceWith(this._template.clone())
+	}
+
+	assembled(docx,node){
+		this._results.forEach(a=>node.before(a))
+		node.remove()
 		
-	}
-
-	assembled(){
-
+		delete this._results
+		delete this._template
 	}
 }

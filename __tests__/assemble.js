@@ -157,13 +157,29 @@ describe("assemble", function(){
 			})
 		})
 
-		fdescribe("for", function(){
-			it("for(var i=0;i<3;i++)", function(){
-				return template(contents.for(null,"for(var i=0;i<3;i++)")).then(varDoc=>{
+		describe("for", function(){
+			it("for(var i=0;i<3;i++){'hello'}", function(){
+				return template(contents.for("<t>hello<t>","var i=0;i<3;i++")).then(varDoc=>{
 					let staticDoc=varDoc.assemble()
 					let text=staticDoc.officeDocument.content.text()
-					expect(text).toBe("hello.hello.hello.")
-					console.log(text)
+					expect(text).toBe("hellohellohello")
+				})
+			})
+			
+			it("for(var i=0;i<3;i++){exp(i)}", function(){
+				return template(contents.for(contents.exp("${i}"),"var i=0;i<3;i++")).then(varDoc=>{
+					let staticDoc=varDoc.assemble({})
+					let text=staticDoc.officeDocument.content.text()
+					expect(text).toBe("012")
+				})
+			})
+			
+			it("for(var k=0;k<3;k++){for(var i=0;i<3;i++){exp(i)}}", function(){
+				let content=contents.for(contents.for(contents.exp("${i}"),"var i=0;i<3;i++"),"var k=0;k<3;k++")
+				return template(content).then(varDoc=>{
+					let staticDoc=varDoc.assemble({})
+					let text=staticDoc.officeDocument.content.text()
+					expect(text).toBe("012012012")
 				})
 			})
 		})

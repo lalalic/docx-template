@@ -12,7 +12,7 @@ export default class Expression extends Variant{
 	}
 
 	assemble(docx, node, value){
-		if(value==null || value==undefined || value==''){
+		if(value===null || value===undefined || value===''){
 			node.remove()
 		}else{
 			node.find('w\\:t').remove(i=>i!=0).first().text(value)

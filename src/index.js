@@ -64,43 +64,50 @@ export class DocxTemplate extends docx4js{
 		tag=tag.trim()
 
 		model.rawCode=tag
+		
 		switch(model.type){
 			case "control.picture":
-			case "control.text": {
-				let exp=DocxTemplate.isExp(tag)
-				if(!exp)
+			case "control.text": 
+				try {
+					let exp=DocxTemplate.isExp(tag)
+					if(!exp)
+						return model
+					
+					model.type=`${model.type}.exp`
+					model.code=esprima.parse(exp)
 					return model
-
-				model.type=`${model.type}.exp`
-				model.code=esprima.parse(exp)
-				return model
-			}
+				} catch(e){
+					console.error(`[${model.type}] ${tag} \r\n ${error.message}`)
+				}
 			case "block":
-			case "inline":{
-				let parsedCode=esprima.parse(tag+'{}')
-				if(parsedCode.body.length==2)//for/if(){}{}
-					parsedCode.body.pop()
-				else if(parsedCode.body.length>1){
-					console.warn(`syntax error, ignore as static content: \n\r ${officeDocument.content(node).text()}`)
-					return model
+			case "inline":
+				try {
+					let parsedCode=esprima.parse(tag+'{}')
+					if(parsedCode.body.length==2)//for/if(){}{}
+						parsedCode.body.pop()
+					else if(parsedCode.body.length>1){
+						console.warn(`syntax error, ignore as static content: \n\r ${officeDocument.content(node).text()}`)
+						return model
+					}
+					let [firstStatement]=parsedCode.body
+					switch(firstStatement.type){
+						case 'ForStatement':
+							model.type=`${model.type}.for`
+							model.code=parsedCode
+							return model
+						break
+						case 'IfStatement':
+							model.type=`${model.type}.if`
+							model.code=parsedCode
+							return model
+						break
+						default:
+							console.warn(`unsupported statement in ${model.type}, ignore as static content: \n\r ${officeDocument.content(node).text()}`)
+							return model
+					}
+				}catch(error){
+					console.error(`[${model.type}] ${tag} \r\n ${error.message}`)
 				}
-				let [firstStatement]=parsedCode.body
-				switch(firstStatement.type){
-					case 'ForStatement':
-						model.type=`${model.type}.for`
-						model.code=parsedCode
-						return model
-					break
-					case 'IfStatement':
-						model.type=`${model.type}.if`
-						model.code=parsedCode
-						return model
-					break
-					default:
-						console.warn(`unsupported statement in ${model.type}, ignore as static content: \n\r ${officeDocument.content(node).text()}`)
-						return model
-				}
-			}
 		}
 		delete model.rawCode
 		return model
