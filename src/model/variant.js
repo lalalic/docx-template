@@ -1,5 +1,14 @@
+let uuid=0
 export default class Variant{
 	constructor(node,code,children){
+		if(node.attribs.id===undefined){
+			Object.defineProperty(node.attribs,"id",{
+				value:`a${uuid++}`,
+				writable:false,
+				enumerable:false//not output in xml
+			})
+		}
+		
 		this.node=node
 		this.code=code
 		this.children=children||[]
@@ -23,6 +32,6 @@ export default class Variant{
 	}
 
 	assemble(docx,node){
-
+		delete node.attribs.id
 	}
 }

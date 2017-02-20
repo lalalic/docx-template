@@ -17,5 +17,6 @@ export default class Expression extends Variant{
 		}else{
 			node.find('w\\:t').remove(i=>i!=0).first().text(value)
 		}
+		
 	}
 }

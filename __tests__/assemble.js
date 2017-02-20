@@ -18,6 +18,7 @@ describe("assemble", function(){
 				_exp.assemble=jest.fn()
 				let staticDoc=varDoc.assemble({name:"abc"})
 				expect(_exp.assemble).toBeCalledWith(...args.concat(["abc"]))
+				console.log(staticDoc.officeDocument.content.xml())
 			})
 		})
 
