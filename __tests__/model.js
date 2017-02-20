@@ -29,20 +29,12 @@ describe("docx template models", function(){
         it("can identify picture", function(){
             identify(contents["picture"](),"control.picture.exp")
         })
-
-        it.skip("can load image for variant.picture", done=>{
-            var Picture=require("../lib/model/_picture")
-            var getImageData=Picture.prototype.getImageData
-            var url=$.isNode ? "http://parse.com/assets/images/server/logo.svg" : "/"
-            getImageData(url).then(done).catch(e=>{fail(e);done()})
-        })
 	})
 	
 	describe("models",function(){
 		const template=content=>DocxTemplate.create().then(docx=>{
 			let relDoc=docx.main.getRelTarget("officeDocument")
-			docx.parts[relDoc]=docx.officeDocument.content
-				=DocxTemplate.parseXml(`<w:document><w:body>${content}</w:body></w:document>`)
+			docx.parts[relDoc]=DocxTemplate.parseXml(`<w:document><w:body>${content}</w:body></w:document>`)
 			return docx
 		}).then(docx=>DocxTemplate.parse(docx))
 		

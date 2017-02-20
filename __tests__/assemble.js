@@ -5,8 +5,7 @@ import contents from "./content"
 describe("assemble", function(){
 	const template=content=>DocxTemplate.create().then(docx=>{
 		let relDoc=docx.main.getRelTarget("officeDocument")
-		docx.parts[relDoc]=docx.officeDocument.content
-			=DocxTemplate.parseXml(`<w:document><w:body>${content}</w:body></w:document>`)
+		docx.parts[relDoc]=DocxTemplate.parseXml(`<w:document><w:body>${content}</w:body></w:document>`)
 		return docx
 	}).then(docx=>DocxTemplate.parse(docx))
 
@@ -18,7 +17,6 @@ describe("assemble", function(){
 				_exp.assemble=jest.fn()
 				let staticDoc=varDoc.assemble({name:"abc"})
 				expect(_exp.assemble).toBeCalledWith(...args.concat(["abc"]))
-				console.log(staticDoc.officeDocument.content.xml())
 			})
 		})
 
@@ -94,6 +92,14 @@ describe("assemble", function(){
 	})
 
 	describe("assembled content", function(){
+		it("xml without id outputed", function(){
+			return template(contents.exp()).then(varDoc=>{
+					let staticDoc=varDoc.assemble({name:"abc"})
+					let xml=staticDoc.officeDocument.content.xml()
+					expect(xml).not.toMatch(' id="')
+				})
+		})
+		
 		describe("expression", function(){
 			it("${name}='abc'",()=>{
 				return template(contents.exp()).then(varDoc=>{
@@ -183,6 +189,20 @@ describe("assemble", function(){
 					expect(text).toBe("012012012")
 				})
 			})
+		})
+	})
+
+	it("multipl assembling times", function(){
+		let content=n=>contents.for(contents.for(contents.exp("${name}"),`var i=0;i<${n};i++`),`var k=0;k<${n};k++`)
+		return template(content(3)).then(varDoc=>{
+			let staticDoc1=varDoc.assemble({name:"test"})
+			let expected=new Array(3*3)
+			expected.fill("test")
+			expect(staticDoc1.officeDocument.content.text()).toBe(expected.join(""))
+			
+			let staticDoc2=varDoc.assemble({name:"world"})
+			expected.fill("world")
+			expect(staticDoc2.officeDocument.content.text()).toBe(expected.join(""))
 		})
 	})
 })

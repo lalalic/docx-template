@@ -42,7 +42,7 @@ export class VariantHandler extends ModelHandler{
 
 	}
 
-	assemble(data,transactional){
+	assemble(data){
 		return this.varDoc.assemble(...arguments)
 	}
 }

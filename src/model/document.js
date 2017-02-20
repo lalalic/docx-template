@@ -12,6 +12,7 @@ export default class Document{
 		try{
 			let targetDoc=this.docx.clone()
 			this.engine.call(targetDoc, data, this.variants, targetDoc.officeDocument.content)
+			targetDoc.officeDocument.content(`[id]`).removeAttr("id")
 			return targetDoc
 		}catch(error){
 			console.error(error)

@@ -1,13 +1,8 @@
 let uuid=0
 export default class Variant{
 	constructor(node,code,children){
-		if(node.attribs.id===undefined){
-			Object.defineProperty(node.attribs,"id",{
-				value:`a${uuid++}`,
-				writable:false,
-				enumerable:false//not output in xml
-			})
-		}
+		if(node.attribs.id===undefined)
+			node.attribs.id=`a${uuid++}`
 		
 		this.node=node
 		this.code=code
