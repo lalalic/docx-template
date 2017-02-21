@@ -15,32 +15,17 @@ richtext form control's <b>tag</b> with pattern <b>for(;;)[with][{...}]</b>
 picture form control's <b>tag</b> with expression pattern <b>${...}</b>
 
 # API
-## parse(template.docx): for multiple assembly
+## parse(template.docx)
 return Promise, resolved with a VariantDocx with following api
-	* assemble({}/*data*/,transactional?)
-	* variantChildren
-
-## assemble(template.docx, {}/*data*/): for transactional assembly
-return Promise, resolved with a new docx with following api
-
-	* save(filename?): save to file for nodejs
-	* parse([...docx4js compatible visitor factories])
-	* variantChildren
-	* data: jszip docx data
+	* assemble({}/*data*/): return Promise resolved docx4js instance
 
 # Example
 
-## Transactional
-	require("docx-template")
-	.assemble(input.files[0],{name:"test"})
-	.then(assembled=>assembled.save)
+<pre>
+import docxTemplate from "docx-template"
 
-## Batch
-
-	let docx=require("docx-template").parse(input.files[0])
-	docx.assemble({name:"John"})
-		.save()
-	docx.assemble({name:"Mike"})
-		.parse(require("docx2html").factory)
-	doc.assemble({name:"Jason"})
-		.save()
+docxTemplate.parse("~/template.docx").then(varDoc=>{
+	let staticDocx=varDoc.assemble({name:"foo"})
+	staticDocx.save("~/static.docx")
+})
+</pre>

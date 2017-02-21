@@ -1,7 +1,7 @@
 {
   "name": "docx-template",
   "description": "customizing docx template with data",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "author": {
     "name": "Raymond Li",
     "email": "lalalic@139.com"
