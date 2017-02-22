@@ -37,7 +37,6 @@
     "escodegen": "^1.8.0",
     "esprima": "^2.7.2",
     "jszip": "^2.6.0",
-    "request": "^2.67.0",
     "xmldom": "^0.1.19"
   },
   "babel": {

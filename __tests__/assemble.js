@@ -132,18 +132,13 @@ describe("assemble", function(){
 			it("picture",()=>{
 				return template(contents.picture()).then(varDoc=>{
 					let _pic=varDoc.children[0]
-					let p=Promise.resolve([1,2,3])
-					_pic.getImageData=jest.fn().mockReturnValue(p)
 					let rels=varDoc.docx.officeDocument.rels("Relationship").length
 					let staticDoc=varDoc.assemble({photo:"abc"})
-					expect(_pic.getImageData).toBeCalledWith("abc")
-					return p.then(function(){
-						expect(staticDoc.officeDocument.rels("Relationship").length).toBe(rels+1)
-						let blip=staticDoc.officeDocument.content("a\\:blip")
-						expect(blip.length).toBe(1)
-						let rid=blip.attr("r:embed")
-						expect(rid).toMatch(/^rId\d?/)
-					})
+					expect(staticDoc.officeDocument.rels("Relationship").length).toBe(rels+1)
+					let blip=staticDoc.officeDocument.content("a\\:blip")
+					expect(blip.length).toBe(1)
+					let rid=blip.attr("r:embed")
+					expect(rid).toMatch(/^rId\d?/)
 				})
 			})
 		})
