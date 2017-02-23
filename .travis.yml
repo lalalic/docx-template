@@ -3,10 +3,11 @@ node_js:
  - 6
 
 install:
- - npm install
+ - yarn install
+ - yarn upgrade docx4js
 
 before_deploy:
- - npm run build
+ - yarn run build
 
 deploy:
  provider: npm
