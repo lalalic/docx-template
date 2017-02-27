@@ -106,7 +106,7 @@ export class DocxTemplate extends docx4js{
 							return model
 					}
 				}catch(error){
-					console.error(`[${model.type}] ${tag} \r\n ${error.message}`)
+					console.log(`[${model.type}] with ${tag}, but not variant`)
 				}
 		}
 		delete model.rawCode
