@@ -1,7 +1,7 @@
 {
   "name": "docx-template",
   "description": "customizing docx template with data",
-  "version": "2.0.3",
+  "version": "2.0.4",
   "author": {
     "name": "Raymond Li",
     "email": "lalalic@139.com"
@@ -37,6 +37,7 @@
     "escodegen": "^1.8.0",
     "esprima": "^2.7.2",
     "jszip": "^2.6.0",
+    "lodash.unescape": "^4.0.1",
     "xmldom": "^0.1.19"
   },
   "babel": {

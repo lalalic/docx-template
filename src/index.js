@@ -1,6 +1,7 @@
 import esprima from "esprima"
 import docx4js from "docx4js"
-
+import unescape from "lodash.unescape"
+ 
 import VariantHandler from "./variant-handler"
 
 const VARIANTS="control.picture,control.text,block,inline".split(",")
@@ -61,7 +62,7 @@ export class DocxTemplate extends docx4js{
 		if(!tag)
 			return model
 
-		tag=tag.trim()
+		tag=unescape(tag.trim())
 
 		model.rawCode=tag
 		
