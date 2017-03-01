@@ -7,7 +7,7 @@ before_install:
 
 install:
  - yarn install
- - yarn upgrade docx4js
+ - yarn upgrade docx4js@https://github.com/lalalic/docx4js
 
 before_deploy:
  - yarn run build
