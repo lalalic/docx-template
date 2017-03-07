@@ -16,8 +16,6 @@ export class DocxTemplate extends docx4js{
 			docx.parse(handler, DocxTemplate.identify)
 			return handler.varDoc
         }
-		if(file instanceof docx4js)
-			return Promise.resolve(_parse(file))
 
         return this.load(file).then(_parse)
     }
