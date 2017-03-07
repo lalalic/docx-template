@@ -40,9 +40,12 @@ export class DocxTemplate extends docx4js{
 
 	static identify(node, officeDocument){
 		let tagName=node.name.split(":").pop()
+		if(tagName=="document")
+			return {type:"document", children: node.children[0].children}
+
 		if(tagName=="styles" || tagName=="numbering")
 			return null
-
+		
 		let model=docx4js.OfficeDocument.identify(...arguments)
 
 
