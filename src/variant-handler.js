@@ -14,9 +14,19 @@ export class VariantHandler extends ModelHandler{
 	}
 
 	createElement(type,{code,node,rawCode},children){
-		if(children)
-			children=children.filter(a=>a instanceof Variant)
-
+		if(children){
+			const flat=(array,flated=[])=>array.reduce((collected,a)=>{
+				if(Array.isArray(a)){
+					flat(a,collected)
+				}else if(a instanceof Variant){
+					collected.push(a)	
+				}
+				return collected
+			},flated)
+			
+			children=flat(children)
+		}
+		
 		switch(type){
 			case "control.picture.exp":
 				return new Picture(node,code)

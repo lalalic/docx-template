@@ -36,18 +36,19 @@ export class DocxTemplate extends docx4js{
 		return false
 	}
 
-	static identify(node, officeDocument){
-		let tagName=node.name.split(":").pop()
-		if(tagName=="document")
-			return {type:"document", children: node.children[0].children}
+	static identify(node, officeDocument, filter=false){
+		if(filter){
+			let tagName=node.name.split(":").pop()
+			if(tagName=="document")
+				return {type:"document", children: node.children[0].children}
 
-		if(tagName=="styles" || tagName=="numbering")
-			return null
+			if(tagName=="styles" || tagName=="numbering")
+				return null
+		}
 		
 		let model=docx4js.OfficeDocument.identify(...arguments)
-
-
-		if(typeof(model)=="string" || VARIANTS.indexOf(model.type)==-1)
+		
+		if(!model || typeof(model)=="string" || VARIANTS.indexOf(model.type)==-1)
 			return model
 
 		let sdtPr=node.children.find(a=>a.name=="w:sdtPr")
