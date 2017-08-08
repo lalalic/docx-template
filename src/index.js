@@ -36,7 +36,7 @@ export class DocxTemplate extends docx4js{
 		return false
 	}
 
-	static identify(node, officeDocument, filter=false){
+	static identify(node, officeDocument, filter=true){
 		if(filter){
 			let tagName=node.name.split(":").pop()
 			if(tagName=="document")

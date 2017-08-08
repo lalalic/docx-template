@@ -34,7 +34,7 @@ describe("docx template models", function(){
 	describe("models",function(){
 		const template=content=>DocxTemplate.create().then(docx=>{
 			let relDoc=docx.main.getRelTarget("officeDocument")
-			docx.parts[relDoc]=DocxTemplate.parseXml(`<w:document><w:body>${content}</w:body></w:document>`)
+			docx.parts[relDoc]=DocxTemplate.parseXml(`<w:document><w:body>${content}<w:sectPr/></w:body></w:document>`)
 			return docx
 		}).then(docx=>DocxTemplate.parse(docx))
 		
