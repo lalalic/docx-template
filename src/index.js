@@ -1,7 +1,7 @@
 import esprima from "esprima"
 import docx4js from "docx4js"
 import unescape from "lodash.unescape"
- 
+
 import VariantHandler from "./variant-handler"
 
 const VARIANTS="control.picture,control.text,block,inline".split(",")
@@ -45,9 +45,9 @@ export class DocxTemplate extends docx4js{
 			if(tagName=="styles" || tagName=="numbering")
 				return null
 		}
-		
+
 		let model=docx4js.OfficeDocument.identify(...arguments)
-		
+
 		if(!model || typeof(model)=="string" || VARIANTS.indexOf(model.type)==-1)
 			return model
 
@@ -67,15 +67,15 @@ export class DocxTemplate extends docx4js{
 		tag=unescape(tag.trim())
 
 		model.rawCode=tag
-		
+
 		switch(model.type){
 			case "control.picture":
-			case "control.text": 
+			case "control.text":
 				try {
 					let exp=DocxTemplate.isExp(tag)
 					if(!exp)
 						return model
-					
+
 					model.type=`${model.type}.exp`
 					model.code=esprima.parse(exp)
 					return model
