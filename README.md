@@ -3,7 +3,10 @@ create personalized docx from docx template and data
 
 # supported variants following javascript language
 ## any javascript expression
-richtext form control's text content with pattern <b>${...}</b>
+richtext form control's <b>tag</b> with pattern <b>${...}</b>
+
+## picture variable
+picture form control's <b>tag</b> with expression pattern <b>${...}</b>
 
 ## if(...)[with][{...}]
 richtext form control's <b>tag</b> with pattern <b>if(...)[with][{...}]</b>
@@ -11,8 +14,7 @@ richtext form control's <b>tag</b> with pattern <b>if(...)[with][{...}]</b>
 ## for(;;)[with][{...}]
 richtext form control's <b>tag</b> with pattern <b>for(;;)[with][{...}]</b>
 
-## picture variable
-picture form control's <b>tag</b> with expression pattern <b>${...}</b>
+
 
 # API
 ## parse(template.docx)
@@ -29,3 +31,6 @@ docxTemplate.parse("~/template.docx").then(varDoc=>{
 	staticDocx.save("~/static.docx")
 })
 </pre>
+
+# Todo
+* remove placeholder media/picture
