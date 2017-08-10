@@ -11,10 +11,10 @@ export default class For extends Variant{
 			codeBlock=codeBlock.body
 
 		this.children.forEach(a=>codeBlock.push(a.code))
-		codeBlock.push(esprima.parse(`${this.id}.assemble(this,$('#${this.id}'))`).body[0])
+		codeBlock.push(esprima.parse(`${this.id}.assemble(this,$('${this.selector}'))`).body[0])
 		
-		this.code.body.unshift(esprima.parse(`${this.id}.assembling(this,$('#${this.id}'))`).body[0])
-		this.code.body.push(esprima.parse(`${this.id}.assembled(this,$('#${this.id}'))`).body[0])
+		this.code.body.unshift(esprima.parse(`${this.id}.assembling(this,$('${this.selector}'))`).body[0])
+		this.code.body.push(esprima.parse(`${this.id}.assembled(this,$('${this.selector}'))`).body[0])
 	}
 
 	assembling(docx,node){

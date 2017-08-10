@@ -1,9 +1,9 @@
 let uuid=0
 export default class Variant{
+	static ID="dtid"
 	constructor(node,code,children){
-		if(node.attribs.id===undefined)
-			node.attribs.id=`a${uuid++}`
-		
+		node.attribs[this.constructor.ID]=`a${uuid++}`
+		 
 		this.node=node
 		this.code=code
 		this.children=children||[]
@@ -11,7 +11,7 @@ export default class Variant{
 	}
 
 	get id(){
-		return this.node.attribs.id
+		return this.node.attribs[this.constructor.ID]
 	}
 
 	get rawCode(){
@@ -23,10 +23,14 @@ export default class Variant{
 		if(!this.parent)
 			return this._assemblingNode
 		else
-			return this.parent.assemblingNode.find(`#${this.id}`)
+			return this.parent.assemblingNode.find(this.selector)
 	}
 
 	assemble(docx,node){
-		delete node.attribs.id
+		
+	}
+	
+	get selector(){
+		return `[${this.constructor.ID}=${this.id}]`
 	}
 }

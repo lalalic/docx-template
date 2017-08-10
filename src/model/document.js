@@ -1,5 +1,6 @@
 import esprima from "esprima"
 import escodegen from "escodegen"
+import {ID} from "./variant"
 
 export default class Document{
 	constructor(docx,children){
@@ -12,7 +13,7 @@ export default class Document{
 		try{
 			let targetDoc=this.docx.clone()
 			this.engine.call(targetDoc, data, this.variants, targetDoc.officeDocument.content)
-			targetDoc.officeDocument.content(`[id]`).removeAttr("id")
+			targetDoc.officeDocument.content(`[${ID}]`).removeAttr(ID)
 			return targetDoc
 		}catch(error){
 			console.error(error)

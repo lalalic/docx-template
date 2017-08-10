@@ -8,7 +8,14 @@ describe("assemble", function(){
 		docx.parts[relDoc]=DocxTemplate.parseXml(`<w:document><w:body>${content}<w:sectPr/></w:body></w:document>`)
 		return docx
 	}).then(docx=>DocxTemplate.parse(docx))
-
+		
+	it("raw id should be reserved", ()=>{
+		return template('<w:p id="192"/>').then(varDoc=>{
+			let staticDoc=varDoc.assemble({name:"abc"})
+			expect(staticDoc.officeDocument.content("[id]").length).toBe(1)
+		})
+	})
+		
 	describe("assemble logic", function(){
 		let args=[expect.any(Object), expect.any(Object)]
 		it("${name}",()=>{
