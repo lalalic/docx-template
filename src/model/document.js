@@ -9,12 +9,17 @@ export default class Document{
 	}
 
 	assemble(data){
-		let $=this.docx.officeDocument.content
 		try{
+			let done=[]
 			let targetDoc=this.docx.clone()
-			this.engine.call(targetDoc, data, this.variants, targetDoc.officeDocument.content)
-			targetDoc.officeDocument.content(`[${ID}]`).removeAttr(ID)
-			return targetDoc
+			this.engine.call(targetDoc, data, this.variants, targetDoc.officeDocument.content, done)
+
+			const clear=()=>{
+				targetDoc.officeDocument.content(`[${ID}]`).removeAttr(ID)
+				return targetDoc
+			}
+
+			return Promise.all(done).then(clear)
 		}catch(error){
 			console.error(error)
 		}
@@ -35,11 +40,11 @@ export default class Document{
 
 	get engine(){
 		let code=this.js({})
-		return new Function("data={},variants, $, _safe",code)
+		return new Function("data={},__variants, $, __promises",code)
 	}
 
 	js(options){
-		let code=esprima.parse("with(data){with(variants){}}")
+		let code=esprima.parse("with(data){with(__variants){}}")
 		let codeBlock=code.body[0].body.body[0].body.body
 		this.children.forEach(a=>codeBlock.push(a.code))
 

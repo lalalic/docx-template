@@ -8,22 +8,22 @@ describe("assemble", function(){
 		docx.parts[relDoc]=DocxTemplate.parseXml(`<w:document><w:body>${content}<w:sectPr/></w:body></w:document>`)
 		return docx
 	}).then(docx=>DocxTemplate.parse(docx))
-		
+
 	it("raw id should be reserved", ()=>{
 		return template('<w:p id="192"/>').then(varDoc=>{
-			let staticDoc=varDoc.assemble({name:"abc"})
-			expect(staticDoc.officeDocument.content("[id]").length).toBe(1)
+			return varDoc.assemble({name:"abc"})
+				.then(staticDoc=>expect(staticDoc.officeDocument.content("[id]").length).toBe(1))
 		})
 	})
-		
+
 	describe("assemble logic", function(){
 		let args=[expect.any(Object), expect.any(Object)]
 		it("${name}",()=>{
 			return template(contents.exp()).then(varDoc=>{
 				let _exp=varDoc.children[0]
 				_exp.assemble=jest.fn()
-				let staticDoc=varDoc.assemble({name:"abc"})
-				expect(_exp.assemble).toBeCalledWith(...args.concat(["abc"]))
+				return varDoc.assemble({name:"abc"})
+					.then(staticDoc=>expect(_exp.assemble).toBeCalledWith(...args.concat(["abc"])))
 			})
 		})
 
@@ -31,8 +31,8 @@ describe("assemble", function(){
 			return template(contents.picture()).then(varDoc=>{
 				let _exp=varDoc.children[0]
 				_exp.assemble=jest.fn()
-				let staticDoc=varDoc.assemble({photo:"abc"})
-				expect(_exp.assemble).toBeCalledWith(...args.concat(["abc"]))
+				return varDoc.assemble({photo:"abc"})
+					.then(staticDoc=>expect(_exp.assemble).toBeCalledWith(...args.concat(["abc"])))
 			})
 		})
 
@@ -40,8 +40,8 @@ describe("assemble", function(){
 			return template(contents.if()).then(varDoc=>{
 				let _exp=varDoc.children[0]
 				_exp.assemble=jest.fn()
-				let staticDoc=varDoc.assemble()
-				expect(_exp.assemble).toBeCalledWith(...args.concat([true]))
+				return varDoc.assemble()
+					.then(staticDoc=>expect(_exp.assemble).toBeCalledWith(...args.concat([true])))
 			})
 		})
 
@@ -49,8 +49,8 @@ describe("assemble", function(){
 			return template(contents.if(null,false)).then(varDoc=>{
 				let _exp=varDoc.children[0]
 				_exp.assemble=jest.fn()
-				let staticDoc=varDoc.assemble()
-				expect(_exp.assemble).toBeCalledWith(...args.concat([false]))
+				return varDoc.assemble()
+					.then(staticDoc=>expect(_exp.assemble).toBeCalledWith(...args.concat([false])))
 			})
 		})
 
@@ -60,9 +60,11 @@ describe("assemble", function(){
 				_if.assemble=jest.fn()
 				let _exp=_if.children[0]
 				_exp.assemble=jest.fn()
-				let staticDoc=varDoc.assemble({name:"abc"})
-				expect(_if.assemble).toBeCalledWith(...args.concat([true]))
-				expect(_exp.assemble).toBeCalledWith(...args.concat(["abc"]))
+				return varDoc.assemble({name:"abc"})
+					.then(staticDoc=>{
+						expect(_if.assemble).toBeCalledWith(...args.concat([true]))
+						expect(_exp.assemble).toBeCalledWith(...args.concat(["abc"]))
+					})
 			})
 		})
 
@@ -73,10 +75,11 @@ describe("assemble", function(){
 				_exp.assembling=jest.fn()
 				_exp.assemble=jest.fn()
 				_exp.assembled=jest.fn()
-				let staticDoc=varDoc.assemble()
-				expect(_exp.assembling).toHaveBeenCalledTimes(1)
-				expect(_exp.assemble).toHaveBeenCalledTimes(3)
-				expect(_exp.assembled).toHaveBeenCalledTimes(1)
+				return varDoc.assemble().then(staticDoc=>{
+					expect(_exp.assembling).toHaveBeenCalledTimes(1)
+					expect(_exp.assemble).toHaveBeenCalledTimes(3)
+					expect(_exp.assembled).toHaveBeenCalledTimes(1)
+				})
 			})
 		})
 
@@ -88,11 +91,12 @@ describe("assemble", function(){
 				_for.assembled=jest.fn()
 				let _if=_for.children[0]
 				_if.assemble=jest.fn()
-				let staticDoc=varDoc.assemble()
-				expect(_for.assembling).toHaveBeenCalledTimes(1)
-				expect(_for.assemble).toHaveBeenCalledTimes(3)
-				expect(_for.assembled).toHaveBeenCalledTimes(1)
-				expect(_if.assemble).toHaveBeenCalledTimes(3)
+				return varDoc.assemble().then(staticDoc=>{
+					expect(_for.assembling).toHaveBeenCalledTimes(1)
+					expect(_for.assemble).toHaveBeenCalledTimes(3)
+					expect(_for.assembled).toHaveBeenCalledTimes(1)
+					expect(_if.assemble).toHaveBeenCalledTimes(3)
+				})
 			})
 		})
 
@@ -101,36 +105,37 @@ describe("assemble", function(){
 	describe("assembled content", function(){
 		it("xml without id outputed", function(){
 			return template(contents.exp()).then(varDoc=>{
-					let staticDoc=varDoc.assemble({name:"abc"})
-					let xml=staticDoc.officeDocument.content.xml()
-					expect(xml).not.toMatch(' id="')
+					return varDoc.assemble({name:"abc"}).then(staticDoc=>{
+						let xml=staticDoc.officeDocument.content.xml()
+						expect(xml).not.toMatch(' id="')
+					})
 				})
 		})
-		
+
 		describe("expression", function(){
 			it("${name}='abc'",()=>{
 				return template(contents.exp()).then(varDoc=>{
-					let staticDoc=varDoc.assemble({name:"abc"})
-					expect(staticDoc.officeDocument.content.text()).toMatch("abc")
+					return varDoc.assemble({name:"abc"})
+						.then(staticDoc=>expect(staticDoc.officeDocument.content.text()).toMatch("abc"))
 				})
 			})
 
 			it("${}==null",()=>{
 				return template(contents.exp()).then(varDoc=>{
-					let staticDoc=varDoc.assemble({name:null})
-					expect(staticDoc.officeDocument.content.text()).toBe("")
+					return varDoc.assemble({name:null})
+						.then(staticDoc=>expect(staticDoc.officeDocument.content.text()).toBe(""))
 				})
 			})
 			it("${}==''",()=>{
 				return template(contents.exp()).then(varDoc=>{
-					let staticDoc=varDoc.assemble({name:null})
-					expect(staticDoc.officeDocument.content.text()).toBe("")
+					return varDoc.assemble({name:null})
+						.then(staticDoc=>expect(staticDoc.officeDocument.content.text()).toBe(""))
 				})
 			})
 			it("${}==undefined",()=>{
 				return template(contents.exp()).then(varDoc=>{
-					let staticDoc=varDoc.assemble({name:undefined})
-					expect(staticDoc.officeDocument.content.text()).toBe("")
+					return varDoc.assemble({name:undefined})
+						.then(staticDoc=>expect(staticDoc.officeDocument.content.text()).toBe(""))
 				})
 			})
 		})
@@ -140,12 +145,13 @@ describe("assemble", function(){
 				return template(contents.picture()).then(varDoc=>{
 					let _pic=varDoc.children[0]
 					let rels=varDoc.docx.officeDocument.rels("Relationship").length
-					let staticDoc=varDoc.assemble({photo:"abc"})
-					expect(staticDoc.officeDocument.rels("Relationship").length).toBe(rels+1)
-					let blip=staticDoc.officeDocument.content("a\\:blip")
-					expect(blip.length).toBe(1)
-					let rid=blip.attr("r:embed")
-					expect(rid).toMatch(/^rId\d?/)
+					return varDoc.assemble({photo:"abc"}).then(staticDoc=>{
+						expect(staticDoc.officeDocument.rels("Relationship").length).toBe(rels+1)
+						let blip=staticDoc.officeDocument.content("a\\:blip")
+						expect(blip.length).toBe(1)
+						let rid=blip.attr("r:embed")
+						expect(rid).toMatch(/^rId\d?/)
+					})
 				})
 			})
 		})
@@ -153,15 +159,15 @@ describe("assemble", function(){
 		describe("if", function(){
 			it("if(true)", function(){
 				return template(contents.if()).then(varDoc=>{
-					let staticDoc=varDoc.assemble({})
-					expect(staticDoc.officeDocument.content.text()).toMatch("hello")
+					return varDoc.assemble({})
+						.then(staticDoc=>expect(staticDoc.officeDocument.content.text()).toMatch("hello"))
 				})
 			})
 
 			it("if(false)", function(){
 				return template(contents.if(null,false)).then(varDoc=>{
-					let staticDoc=varDoc.assemble({})
-					expect(staticDoc.officeDocument.content.text()).toBe("")
+					return varDoc.assemble({})
+						.then(staticDoc=>expect(staticDoc.officeDocument.content.text()).toBe(""))
 				})
 			})
 		})
@@ -169,42 +175,50 @@ describe("assemble", function(){
 		describe("for", function(){
 			it("for(var i=0;i<3;i++){'hello'}", function(){
 				return template(contents.for("<t>hello<t>","var i=0;i<3;i++")).then(varDoc=>{
-					let staticDoc=varDoc.assemble()
-					let text=staticDoc.officeDocument.content.text()
-					expect(text).toBe("hellohellohello")
+					return varDoc.assemble().then(staticDoc=>{
+						let text=staticDoc.officeDocument.content.text()
+						expect(text).toBe("hellohellohello")
+					})
 				})
 			})
-			
+
 			it("for(var i=0;i<3;i++){exp(i)}", function(){
 				return template(contents.for(contents.exp("${i}"),"var i=0;i<3;i++")).then(varDoc=>{
-					let staticDoc=varDoc.assemble({})
-					let text=staticDoc.officeDocument.content.text()
-					expect(text).toBe("012")
+					return varDoc.assemble({}).then(staticDoc=>{
+						let text=staticDoc.officeDocument.content.text()
+						expect(text).toBe("012")
+					})
 				})
 			})
-			
+
 			it("for(var k=0;k<3;k++){for(var i=0;i<3;i++){exp(i)}}", function(){
 				let content=contents.for(contents.for(contents.exp("${i}"),"var i=0;i<3;i++"),"var k=0;k<3;k++")
 				return template(content).then(varDoc=>{
-					let staticDoc=varDoc.assemble({})
-					let text=staticDoc.officeDocument.content.text()
-					expect(text).toBe("012012012")
+					return varDoc.assemble({}).then(staticDoc=>{
+						let text=staticDoc.officeDocument.content.text()
+						expect(text).toBe("012012012")
+					})
 				})
 			})
 		})
 	})
 
-	it("multipl assembling times", function(){
+	it("multiple assembling times", function(){
 		let content=n=>contents.for(contents.for(contents.exp("${name}"),`var i=0;i<${n};i++`),`var k=0;k<${n};k++`)
 		return template(content(3)).then(varDoc=>{
-			let staticDoc1=varDoc.assemble({name:"test"})
-			let expected=new Array(3*3)
-			expected.fill("test")
-			expect(staticDoc1.officeDocument.content.text()).toBe(expected.join(""))
-			
-			let staticDoc2=varDoc.assemble({name:"world"})
-			expected.fill("world")
-			expect(staticDoc2.officeDocument.content.text()).toBe(expected.join(""))
+			let p1=varDoc.assemble({name:"test"}).then(staticDoc=>{
+				let expected=new Array(3*3)
+				expected.fill("test")
+				expect(staticDoc.officeDocument.content.text()).toBe(expected.join(""))
+			})
+
+			let p2=varDoc.assemble({name:"world"}).then(staticDoc=>{
+				let expected=new Array(3*3)
+				expected.fill("world")
+				expect(staticDoc.officeDocument.content.text()).toBe(expected.join(""))
+			})
+
+			return Promise.all([p1,p2])
 		})
 	})
 })

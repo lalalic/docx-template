@@ -1,6 +1,6 @@
 describe("",function(){
 	it("",function(){
-		
+
 	})
 })
 export default {
@@ -55,6 +55,25 @@ export default {
 				<w:p>
 					<w:r>
 						<w:t>hello</w:t>
+					</w:r>
+				</w:p>
+			</w:sdtContent>
+		</w:sdt>`,
+	"subdoc":(a="policy")=>`
+		<w:sdt>
+			<w:sdtPr>
+				<w:alias w:val="subdoc"/>
+				<w:tag w:val="subdoc(${a})"/>
+				<w:id w:val="922459404"/>
+				<w:placeholder>
+					<w:docPart w:val="DefaultPlaceholder_1082065158"/>
+				</w:placeholder>
+			</w:sdtPr>
+			<w:sdtEndPr/>
+			<w:sdtContent>
+				<w:p>
+					<w:r>
+						<w:t>subdoc</w:t>
 					</w:r>
 				</w:p>
 			</w:sdtContent>

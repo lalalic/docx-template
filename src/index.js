@@ -85,6 +85,11 @@ export class DocxTemplate extends docx4js{
 			case "block":
 			case "inline":
 				try {
+					if(tag.startsWith("subdoc(")){
+						model.type=`${model.type}.subdoc`
+						model.code=esprima.parse(tag).body[0].expression.arguments[0]
+						return model
+					}
 					let parsedCode=esprima.parse(tag+'{}')
 					if(parsedCode.body.length==2)//for/if(){}{}
 						parsedCode.body.pop()

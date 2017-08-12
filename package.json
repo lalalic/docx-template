@@ -36,6 +36,7 @@
     "docx4js": "https://github.com/lalalic/docx4js",
     "escodegen": "^1.8.0",
     "esprima": "^2.7.2",
+    "isomorphic-fetch": "^2.2.1",
     "jszip": "^2.6.0",
     "lodash.unescape": "^4.0.1"
   },

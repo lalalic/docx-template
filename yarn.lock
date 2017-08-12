@@ -1292,6 +1292,13 @@ diffie-hellman@^5.0.0:
     miller-rabin "^4.0.0"
     randombytes "^2.0.0"
 
+"docx4js@https://github.com/lalalic/docx4js":
+  version "3.1.5"
+  resolved "https://github.com/lalalic/docx4js#102c93f6f6869a5f9b0b67c2876d055051eee239"
+  dependencies:
+    cheerio "^0.22.0"
+    jszip "^2.6.0"
+
 dom-serializer@0, dom-serializer@~0.1.0:
   version "0.1.0"
   resolved "https://registry.yarnpkg.com/dom-serializer/-/dom-serializer-0.1.0.tgz#073c697546ce0780ce23be4a28e293e40bc30c82"
@@ -1344,6 +1351,12 @@ elliptic@^6.0.0:
     brorand "^1.0.1"
     hash.js "^1.0.0"
     inherits "^2.0.1"
+
+encoding@^0.1.11:
+  version "0.1.12"
+  resolved "http://registry.npm.taobao.org/encoding/download/encoding-0.1.12.tgz#538b66f3ee62cd1ab51ec323829d1f9480c74beb"
+  dependencies:
+    iconv-lite "~0.4.13"
 
 entities@^1.1.1, entities@~1.1.1:
   version "1.1.1"
@@ -1713,7 +1726,7 @@ https-browserify@~0.0.0:
   version "0.0.1"
   resolved "https://registry.yarnpkg.com/https-browserify/-/https-browserify-0.0.1.tgz#3f91365cabe60b77ed0ebba24b454e3e09d95a82"
 
-iconv-lite@0.4.13:
+iconv-lite@0.4.13, iconv-lite@~0.4.13:
   version "0.4.13"
   resolved "https://registry.yarnpkg.com/iconv-lite/-/iconv-lite-0.4.13.tgz#1f88aba4ab0b1508e8312acc39345f36e992e2f2"
 
@@ -1862,6 +1875,10 @@ is-property@^1.0.0:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/is-property/-/is-property-1.0.2.tgz#57fe1c4e48474edd65b09911f26b1cd4095dda84"
 
+is-stream@^1.0.1:
+  version "1.1.0"
+  resolved "http://registry.npm.taobao.org/is-stream/download/is-stream-1.1.0.tgz#12d4a3dd4e68e0b79ceb8dbc84173ae80d91ca44"
+
 is-typedarray@~1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/is-typedarray/-/is-typedarray-1.0.0.tgz#e479c80858df0c1b11ddda6940f96011fcda4a9a"
@@ -1887,6 +1904,13 @@ isobject@^2.0.0:
   resolved "https://registry.yarnpkg.com/isobject/-/isobject-2.1.0.tgz#f065561096a3f1da2ef46272f815c840d87e0c89"
   dependencies:
     isarray "1.0.0"
+
+isomorphic-fetch@^2.2.1:
+  version "2.2.1"
+  resolved "http://registry.npm.taobao.org/isomorphic-fetch/download/isomorphic-fetch-2.2.1.tgz#611ae1acf14f5e81f729507472819fe9733558a9"
+  dependencies:
+    node-fetch "^1.0.1"
+    whatwg-fetch ">=0.10.0"
 
 isstream@~0.1.2:
   version "0.1.2"
@@ -2411,7 +2435,7 @@ lodash.some@^4.4.0:
 
 lodash.unescape@^4.0.1:
   version "4.0.1"
-  resolved "https://registry.yarnpkg.com/lodash.unescape/-/lodash.unescape-4.0.1.tgz#bf2249886ce514cda112fae9218cdc065211fc9c"
+  resolved "http://registry.npm.taobao.org/lodash.unescape/download/lodash.unescape-4.0.1.tgz#bf2249886ce514cda112fae9218cdc065211fc9c"
 
 lodash@^4.14.0, lodash@^4.2.0:
   version "4.17.4"
@@ -2551,6 +2575,13 @@ node-emoji@^1.4.1:
   resolved "https://registry.yarnpkg.com/node-emoji/-/node-emoji-1.5.1.tgz#fd918e412769bf8c448051238233840b2aff16a1"
   dependencies:
     string.prototype.codepointat "^0.2.0"
+
+node-fetch@^1.0.1:
+  version "1.7.2"
+  resolved "http://registry.npm.taobao.org/node-fetch/download/node-fetch-1.7.2.tgz#c54e9aac57e432875233525f3c891c4159ffefd7"
+  dependencies:
+    encoding "^0.1.11"
+    is-stream "^1.0.1"
 
 node-int64@^0.4.0:
   version "0.4.0"
@@ -3488,6 +3519,10 @@ whatwg-encoding@^1.0.1:
   resolved "https://registry.yarnpkg.com/whatwg-encoding/-/whatwg-encoding-1.0.1.tgz#3c6c451a198ee7aec55b1ec61d0920c67801a5f4"
   dependencies:
     iconv-lite "0.4.13"
+
+whatwg-fetch@>=0.10.0:
+  version "2.0.3"
+  resolved "http://registry.npm.taobao.org/whatwg-fetch/download/whatwg-fetch-2.0.3.tgz#9c84ec2dcf68187ff00bc64e1274b442176e1c84"
 
 whatwg-url@^4.3.0:
   version "4.3.0"
