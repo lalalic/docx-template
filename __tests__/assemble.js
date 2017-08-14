@@ -221,4 +221,23 @@ describe("assemble", function(){
 			return Promise.all([p1,p2])
 		})
 	})
+	
+	describe("sub document", function(){
+		it("static sub document", ()=>{
+			return template(contents.subdoc("policy"))
+				.then(varDoc=>varDoc.assemble({policy: '<w:p/>'}))
+				.then(staticDoc=>{
+					expect(staticDoc.officeDocument.content("w\\:altChunk").length).toBe(1)
+				})
+		})
+
+		fit("subdoc with ${exp}",  ()=>{
+			return template(contents.subdoc("policy"))
+				.then(varDoc=>varDoc.assemble({policy: contents.exp(),name:"raymond"}))
+				.then(staticDoc=>{
+					expect(staticDoc.officeDocument.content("w\\:altChunk").length).toBe(1)
+				})
+		})
+		
+	})
 })

@@ -3,7 +3,7 @@ create personalized docx from docx template and data
 
 # supported variants following javascript language
 ## any javascript expression
-richtext form control's <b>tag</b> with pattern <b>${...}</b>
+plain text form control's <b>tag</b> with pattern <b>${...}</b>
 
 ## picture variable
 picture form control's <b>tag</b> with expression pattern <b>${...}</b>
@@ -14,6 +14,8 @@ richtext form control's <b>tag</b> with pattern <b>if(...)[with][{...}]</b>
 ## for(;;)[with][{...}]
 richtext form control's <b>tag</b> with pattern <b>for(;;)[with][{...}]</b>
 
+## sub document
+richtext form control's <b>tag</b> with pattern <b>subdoc(...)</b>
 
 
 # API

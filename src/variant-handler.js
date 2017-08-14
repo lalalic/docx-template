@@ -6,6 +6,7 @@ import Expression from "./model/_exp"
 import If from "./model/_if"
 import For from "./model/_for"
 import Picture from "./model/_picture"
+import SubDoc from "./model/_subdoc"
 
 export class VariantHandler extends ModelHandler{
 	constructor(docx){
@@ -41,6 +42,15 @@ export class VariantHandler extends ModelHandler{
 			case "document":
 				this.varDoc=new Document(this.docx,children)
 				return this
+			case "block.subdoc":
+			case "inline.subdoc":
+				return new SubDoc.Dynamic(node, code)
+			case "chunk":{
+				const {contentType,data}=arguments[1]
+				if(contentType==this.docx.constructor.mime){
+					return new SubDoc(node, data)
+				}
+			}
 			default:
 				if(children && children.length>0){
 					if(children.length==1)

@@ -12,7 +12,7 @@ export default class Document{
 		try{
 			let done=[]
 			let targetDoc=this.docx.clone()
-			this.engine.call(targetDoc, data, this.variants, targetDoc.officeDocument.content, done)
+			this.engine.call(targetDoc, data, this.variants, targetDoc.officeDocument.content, done,escodegen)
 
 			const clear=()=>{
 				targetDoc.officeDocument.content(`[${ID}]`).removeAttr(ID)
@@ -40,7 +40,7 @@ export default class Document{
 
 	get engine(){
 		let code=this.js({})
-		return new Function("data={},__variants, $, __promises",code)
+		return new Function("data={},__variants, $, __promises, escodegen",code)
 	}
 
 	js(options){

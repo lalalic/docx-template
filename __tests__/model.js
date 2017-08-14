@@ -65,6 +65,10 @@ describe("docx template models", function(){
 			it("can identify picture", function(){
 				return check(contents["picture"](),"variant.picture")
 			})
+			
+			it("can identify subdoc", ()=>{
+				return check(contents["subdoc"](),"variant.subdoc")
+			})
 		})
 
 		describe("nested",function(){
@@ -120,6 +124,25 @@ describe("docx template models", function(){
 				return template(`${contents["for"]()}${contents["picture"]()}`).then(varDoc=>{
 					expect(varDoc.children[0].constructor.type).toBe("variant.for")
 					expect(varDoc.children[1].constructor.type).toBe("variant.picture")
+				})
+			})
+			
+			it("for(){ subdoc }", function(){
+				return template(`${contents["for"]()}${contents["subdoc"]()}`).then(varDoc=>{
+					expect(varDoc.children[0].constructor.type).toBe("variant.for")
+					expect(varDoc.children[1].constructor.type).toBe("variant.subdoc")
+				})
+			})
+			
+			it("if(){for,subdoc}", function(){
+				let variants=new Array(5).fill(contents["subdoc"]())
+				variants.push(contents["for"]())
+				return template(contents["if"](variants.join(""))).then(varDoc=>{
+					expect(varDoc.children[0].constructor.type).toBe("variant.if")
+					let _if=varDoc.children[0]
+					expect(_if.children.length).toBe(6)
+					expect(_if.children[0].constructor.type).toBe("variant.subdoc")
+					expect(_if.children[5].constructor.type).toBe("variant.for")
 				})
 			})
 		})
