@@ -1,5 +1,6 @@
 const babel = require("babel-core")
 const esprima=require("esprima")
+import escodegen from "escodegen"
 
 import fetch from "isomorphic-fetch"
 import Variant from "./variant"
@@ -18,7 +19,7 @@ export default class SubDoc extends Variant{
 				if(varDocInfo){
 					let {varDoc, variants, code}=varDocInfo
 					let targetDoc=varDoc.docx.clone()
-					let subdoc=eval("(function(docx, __variants,$){return "+code+"})")
+					let subdoc=eval("(function(docx, __variants,$){"+code+"})")
 					let staticDoc=await subdoc(targetDoc,variants,targetDoc.officeDocument.content)
 					staticDoc.officeDocument.content("[${ID}]").removeAttr("${ID}")
 					let zip=staticDoc.serialize()
@@ -38,7 +39,16 @@ export default class SubDoc extends Variant{
 				}else{
 					let variants=varDoc.variants
 					let code=varDoc.js({})
-					return {varDoc, code: babel.transform(code).code, variants}
+					code=babel.transform(code,{presets: ["es2015", "es2017"]}).code
+					code=esprima.parse(code)
+					let result=code.body[2].expression
+					code.body[2]={
+						type: "ReturnStatement",
+						argument: result
+					}
+					code=escodegen.generate(code,{})
+
+					return {varDoc, code, variants}
 				}
 			})
 	}

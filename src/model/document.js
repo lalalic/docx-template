@@ -38,8 +38,15 @@ export default class Document{
 
 	get engine(){
 		let code=this.js({})
-		//let engine=babel.transform(code,{presets: ["es2015", "es2017"]})
-		return new Function("docx, __={}, __variants, $",`return ${code}`)
+		code=babel.transform(code,{presets: ["es2015", "es2017"]}).code
+		code=esprima.parse(code)
+		let result=code.body[2].expression
+		code.body[2]={
+			type: "ReturnStatement",
+			argument: result
+		}
+		code=escodegen.generate(code,{})
+		return new Function("docx, __, __variants, $",code)
 	}
 
 	js(options){
