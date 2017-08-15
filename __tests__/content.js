@@ -23,11 +23,11 @@ export default {
 				</w:p>`}
 			</w:sdtContent>
 		</w:sdt>`,
-	"for":(b,a)=>`
+	"for":(b,a,c="")=>`
 		<w:sdt>
 			<w:sdtPr>
 				<w:alias w:val="loop 10 times"/>
-				<w:tag w:val="for(${a||"var i=0;i<10;i++"})"/>
+				<w:tag w:val="for(${a||"var i=0;i<10;i++"})${c}"/>
 				<w:id w:val="922459404"/>
 				<w:placeholder>
 					<w:docPart w:val="DefaultPlaceholder_1082065158"/>

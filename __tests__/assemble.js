@@ -190,6 +190,18 @@ describe("assemble", function(){
 					})
 				})
 			})
+			
+			it("for(let i=0;i<employees.length;i++)with(employees[i]){exp(name)}", function(){
+				return template(contents.for(contents.exp("${name}"),"let i=0;i<3;i++", "with(employees[i])"))
+					.then(varDoc=>{
+						return varDoc.assemble({employees:[{name:"test0"},{name:"test1"},{name:"test2"}]
+					})
+					.then(staticDoc=>{
+						let text=staticDoc.officeDocument.content.text()
+						expect(text).toBe("test0test1test2")
+					})
+				})
+			})
 
 			it("for(var k=0;k<3;k++){for(var i=0;i<3;i++){exp(i)}}", function(){
 				let content=contents.for(contents.for(contents.exp("${i}"),"var i=0;i<3;i++"),"var k=0;k<3;k++")
@@ -223,21 +235,77 @@ describe("assemble", function(){
 	})
 	
 	describe("sub document", function(){
+		const checkSubDoc=staticDoc=>{
+			let chunk=staticDoc.officeDocument.content("w\\:altChunk")
+			expect(chunk.length).toBe(1)
+			let rId=chunk.attr("r:id")
+			let subDocPart=staticDoc.officeDocument.getRel(rId)
+			return staticDoc.constructor.load(subDocPart.asUint8Array())
+		}
 		it("static sub document", ()=>{
 			return template(contents.subdoc("policy"))
 				.then(varDoc=>varDoc.assemble({policy: '<w:p/>'}))
-				.then(staticDoc=>{
-					expect(staticDoc.officeDocument.content("w\\:altChunk").length).toBe(1)
-				})
+				.then(checkSubDoc)
 		})
 
-		fit("subdoc with ${exp}",  ()=>{
+		it("subdoc with ${exp}",  ()=>{
 			return template(contents.subdoc("policy"))
 				.then(varDoc=>varDoc.assemble({policy: contents.exp(),name:"raymond"}))
-				.then(staticDoc=>{
-					expect(staticDoc.officeDocument.content("w\\:altChunk").length).toBe(1)
+				.then(checkSubDoc)
+				.then(subDoc=>{
+					expect(subDoc.officeDocument.content.text()).toBe("raymond")
 				})
 		})
 		
+		it("for(var i=0;i<count;i++){subdoc(policy)}",  ()=>{
+			return template(contents.for(contents.subdoc("policy"),"var i=0;i<count;i++"))
+				.then(varDoc=>varDoc.assemble({policy: contents.exp(),name:"raymond", count:3}))
+				.then(staticDoc=>{
+					let chunk=staticDoc.officeDocument.content("w\\:altChunk")
+					expect(chunk.length).toBe(3)
+					
+					let jobs=chunk.map((i,el)=>{
+						let rId=el.attribs["r:id"]
+						let subDocPart=staticDoc.officeDocument.getRel(rId)
+						return staticDoc.constructor.load(subDocPart.asUint8Array())
+					}).get()
+					
+					return Promise.all(jobs)
+				})
+				.then(subdocs=>{
+					subdocs.forEach(subDoc=>expect(subDoc.officeDocument.content.text()).toBe("raymond"))
+				})
+		})
+		
+		it.skip("for(let i=0;i<employees.length;i++)with(employees[i]){subdoc(policy)}",  ()=>{
+			return template(contents.for(contents.subdoc("policy"),"let i=0;i<employees.length;i++", "with(employees[i])"))
+				.then(varDoc=>{
+					console.log(varDoc.js({}))
+					return varDoc.assemble({
+						policy: contents.exp("${name}"),
+						employees:[{name:"raymond0"},{name:"raymond1"},{name:"raymond2"}]
+					})
+				})
+				.then(staticDoc=>{
+					let chunk=staticDoc.officeDocument.content("w\\:altChunk")
+					expect(chunk.length).toBe(3)
+					console.log(staticDoc.officeDocument.content.xml())
+					
+					let jobs=chunk.map((i,el)=>{
+						let rId=el.attribs["r:id"]
+						console.dir({rId})
+						let subDocPart=staticDoc.officeDocument.getRel(rId)
+						return staticDoc.constructor.load(subDocPart.asUint8Array())
+					}).get()
+					
+					return Promise.all(jobs)
+				})
+				.then(subdocs=>{
+					let created=subdocs.map(subDoc=>subDoc.officeDocument.content.text())
+					console.log(created.join(""))
+					let all=["raymond0","raymond1","raymond2"].filter(a=>!created.includes(a))
+					expect(all.length).toBe(0)
+				})
+		})
 	})
 })
