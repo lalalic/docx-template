@@ -1,4 +1,4 @@
-import esprima from "esprima"
+const esprima=require("esprima")
 import Variant from "./variant"
 
 export default class Expression extends Variant{

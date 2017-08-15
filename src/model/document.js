@@ -1,4 +1,4 @@
-import esprima from "esprima"
+const esprima = require("esprima")
 import escodegen from "escodegen"
 import {ID} from "./variant"
 

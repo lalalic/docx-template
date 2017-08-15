@@ -1,6 +1,6 @@
 import Variant from "./variant"
 import escodegen from "escodegen"
-import esprima from "esprima"
+const esprima=require("esprima")
 import {ID} from "./variant"
 import fetch from "isomorphic-fetch"
 
@@ -31,7 +31,7 @@ export default class SubDoc extends Variant{
 						let engine=varDoc.js()
 						let code=engine.body[0].body
 						code=escodegen.generate(code,{})
-						console.log(code)
+						//console.log({code, name: employees[i].name})
 						let subdoc=eval("(function(__variants,$,__promises){"+code+"})")
 						subdoc.call(targetDoc,variants,targetDoc.officeDocument.content,done)
 							
@@ -44,8 +44,7 @@ export default class SubDoc extends Variant{
 							.then(clear)
 							.then(subdoc=>{
 								let zip=subdoc.serialize()
-								let type=typeof(window)!="undefined" ? "blob" : "nodebuffer"
-								let data=zip.generate({type:type})
+								let data=zip.generate({type:"nodebuffer"})
 								${this.id}.assemble(this, node, data)
 							})
 					}catch(error){

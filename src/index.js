@@ -1,4 +1,4 @@
-import esprima from "esprima"
+const esprima=require("esprima")
 import docx4js from "docx4js"
 import unescape from "lodash.unescape"
 
