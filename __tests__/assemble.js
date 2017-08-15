@@ -18,8 +18,8 @@ describe("assemble", function(){
 
 	describe("assemble logic", function(){
 		let args=[expect.any(Object), expect.any(Object)]
-		it("${name}",()=>{
-			return template(contents.exp()).then(varDoc=>{
+		it("${name}",()=>{ 
+			return template(contents.exp("${__.name}")).then(varDoc=>{
 				let _exp=varDoc.children[0]
 				_exp.assemble=jest.fn()
 				return varDoc.assemble({name:"abc"})
@@ -28,7 +28,7 @@ describe("assemble", function(){
 		})
 
 		it("picture",()=>{
-			return template(contents.picture()).then(varDoc=>{
+			return template(contents.picture("${__.photo}")).then(varDoc=>{
 				let _exp=varDoc.children[0]
 				_exp.assemble=jest.fn()
 				return varDoc.assemble({photo:"abc"})
@@ -55,7 +55,7 @@ describe("assemble", function(){
 		})
 
 		it("if(){exp(name)}",()=>{
-			return template(contents.if(contents.exp())).then(varDoc=>{
+			return template(contents.if(contents.exp("${__.name}"))).then(varDoc=>{
 				let _if=varDoc.children[0]
 				_if.assemble=jest.fn()
 				let _exp=_if.children[0]
@@ -104,7 +104,7 @@ describe("assemble", function(){
 
 	describe("assembled content", function(){
 		it("xml without id outputed", function(){
-			return template(contents.exp()).then(varDoc=>{
+			return template(contents.exp("${__.name}")).then(varDoc=>{
 					return varDoc.assemble({name:"abc"}).then(staticDoc=>{
 						let xml=staticDoc.officeDocument.content.xml()
 						expect(xml).not.toMatch(' id="')
@@ -114,26 +114,26 @@ describe("assemble", function(){
 
 		describe("expression", function(){
 			it("${name}='abc'",()=>{
-				return template(contents.exp()).then(varDoc=>{
+				return template(contents.exp("${__.name}")).then(varDoc=>{
 					return varDoc.assemble({name:"abc"})
 						.then(staticDoc=>expect(staticDoc.officeDocument.content.text()).toMatch("abc"))
 				})
 			})
 
 			it("${}==null",()=>{
-				return template(contents.exp()).then(varDoc=>{
+				return template(contents.exp("${__.name}")).then(varDoc=>{
 					return varDoc.assemble({name:null})
 						.then(staticDoc=>expect(staticDoc.officeDocument.content.text()).toBe(""))
 				})
 			})
 			it("${}==''",()=>{
-				return template(contents.exp()).then(varDoc=>{
-					return varDoc.assemble({name:null})
+				return template(contents.exp("${__.name}")).then(varDoc=>{
+					return varDoc.assemble({name:""})
 						.then(staticDoc=>expect(staticDoc.officeDocument.content.text()).toBe(""))
 				})
 			})
 			it("${}==undefined",()=>{
-				return template(contents.exp()).then(varDoc=>{
+				return template(contents.exp("${__.name}")).then(varDoc=>{
 					return varDoc.assemble({name:undefined})
 						.then(staticDoc=>expect(staticDoc.officeDocument.content.text()).toBe(""))
 				})
@@ -142,7 +142,7 @@ describe("assemble", function(){
 
 		describe("picture", function(){
 			it("picture",()=>{
-				return template(contents.picture()).then(varDoc=>{
+				return template(contents.picture("${__.photo}")).then(varDoc=>{
 					let _pic=varDoc.children[0]
 					let rels=varDoc.docx.officeDocument.rels("Relationship").length
 					return varDoc.assemble({photo:"abc"}).then(staticDoc=>{
@@ -173,7 +173,7 @@ describe("assemble", function(){
 		})
 
 		describe("for", function(){
-			it("for(var i=0;i<3;i++){'hello'}", function(){
+			it("for(var i=0;i<3;i++){'hello'}", function(){ 
 				return template(contents.for("<t>hello<t>","var i=0;i<3;i++")).then(varDoc=>{
 					return varDoc.assemble().then(staticDoc=>{
 						let text=staticDoc.officeDocument.content.text()
@@ -191,8 +191,8 @@ describe("assemble", function(){
 				})
 			})
 			
-			it("for(let i=0;i<employees.length;i++)with(employees[i]){exp(name)}", function(){
-				return template(contents.for(contents.exp("${name}"),"let i=0;i<3;i++", "with(employees[i])"))
+			it("for(let i=0;i<__.employees.length;i++){let emp=__.employees[i];exp(name)}", function(){
+				return template(contents.for(contents.exp("${emp.name}"),"let i=0;i<3;i++", "{let emp=__.employees[i];}"))
 					.then(varDoc=>{
 						return varDoc.assemble({employees:[{name:"test0"},{name:"test1"},{name:"test2"}]
 					})
@@ -216,7 +216,7 @@ describe("assemble", function(){
 	})
 
 	it("multiple assembling times", function(){
-		let content=n=>contents.for(contents.for(contents.exp("${name}"),`var i=0;i<${n};i++`),`var k=0;k<${n};k++`)
+		let content=n=>contents.for(contents.for(contents.exp("${__.name}"),`let i=0;i<${n};i++`),`let k=0;k<${n};k++`)
 		return template(content(3)).then(varDoc=>{
 			let p1=varDoc.assemble({name:"test"}).then(staticDoc=>{
 				let expected=new Array(3*3)
@@ -242,7 +242,7 @@ describe("assemble", function(){
 			let subDocPart=staticDoc.officeDocument.getRel(rId)
 			return staticDoc.constructor.load(subDocPart.asUint8Array())
 		}
-		it("static sub document", ()=>{
+		fit("static sub document", ()=>{
 			return template(contents.subdoc("policy"))
 				.then(varDoc=>varDoc.assemble({policy: '<w:p/>'}))
 				.then(checkSubDoc)
@@ -277,7 +277,7 @@ describe("assemble", function(){
 				})
 		})
 		
-		it.skip("for(let i=0;i<employees.length;i++)with(employees[i]){subdoc(policy)}",  ()=>{
+		it("for(let i=0;i<employees.length;i++)with(employees[i]){subdoc(policy)}",  ()=>{
 			return template(contents.for(contents.subdoc("policy"),"let i=0;i<employees.length;i++", "with(employees[i])"))
 				.then(varDoc=>{
 					console.log(varDoc.js({}))

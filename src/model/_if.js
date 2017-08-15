@@ -13,9 +13,9 @@ export default class If extends Variant{
 
 		const {consequent,alternate}=esprima.parse(`
 			if(a){
-				${this.id}.assemble(this, $('${this.selector}'),true)
+				${this.object}.assemble(docx, $('${this.selector}'),true)
 			}else{
-				${this.id}.assemble(this, $('${this.selector}'),false)
+				${this.object}.assemble(docx, $('${this.selector}'),false)
 			}
 		`).body[0]
 

@@ -11,52 +11,46 @@ export default class SubDoc extends Variant{
 		super(node)
 		this.data=data
 		this.code=esprima.parse(`
-			__promises.push(
-				${this.id}
-				.parse(this)
-				.then(varDoc=>{
-					try{
-						let node=$('${this.selector}')
-						if(!varDoc){
-							node.remove()
-							return
-						}else if(varDoc.children.length==0){
-							${this.id}.assemble(this, node, ${this.id}.data)
-							return	
-						}
-						
-						let done=[]
-						let targetDoc=varDoc.docx.clone()
-						let variants=varDoc.variants
-						let engine=varDoc.js()
-						let code=engine.body[0].body
-						code=escodegen.generate(code,{})
-						//console.log({code, name: employees[i].name})
-						let subdoc=eval("(function(__variants,$,__promises){"+code+"})")
-						subdoc.call(targetDoc,variants,targetDoc.officeDocument.content,done)
-							
-						const clear=()=>{
-							targetDoc.officeDocument.content("[${ID}]").removeAttr("${ID}")
-							return targetDoc
-						}
+				let {targetDoc, variants, code}=await ${this.object}.parse(this, $('${this.selector}'))
 
-						return Promise.all(done)
-							.then(clear)
-							.then(subdoc=>{
-								let zip=subdoc.serialize()
-								let data=zip.generate({type:"nodebuffer"})
-								${this.id}.assemble(this, node, data)
-							})
-					}catch(error){
-						console.error(error)
-						throw error
-					}
-				})
-			)`).body[0]
+				let subdoc=eval("(function(__variants,$){"+code+"})")
+				subdoc.call(targetDoc,variants,targetDoc.officeDocument.content)
+					
+				const clear=()=>{
+					targetDoc.officeDocument.content("[${ID}]").removeAttr("${ID}")
+					return targetDoc
+				}
+
+				return Promise.all(done)
+					.then(clear)
+					.then(subdoc=>{
+						let zip=subdoc.serialize()
+						let data=zip.generate({type:"nodebuffer"})
+						${this.id}.assemble(this, node, data)
+					})
+			}catch(error){
+				console.error(error)
+				throw error
+			}
+
+			').body[0]
 	}
 	
-	parse(docx){
+	parse(docx, node){
 		return docx.constructor.parse(this.data)
+			.then(varDoc=>{
+				if(!varDoc){
+					node.remove()
+				}else if(varDoc.children.length==0){
+					this.assemble(this, node, this.data)
+					let targetDoc=varDoc.docx.clone()
+					let variants=varDoc.variants
+					let engine=varDoc.js()
+					let code=engine.body[0].body
+					code=escodegen.generate(code,{})
+					return {targetDoc, code, variants}
+				}
+			})
 	}
 	
 	assemble(docx, node,  subdoc){ 
@@ -72,14 +66,20 @@ class Dynamic extends SubDoc{
 		parseArguments.push(code)
 	}
 	
-	parse(docx, value){
+	parse(docx, node, value){
 		if(value===null || value===undefined || value===''){
 			return Promise.resolve()
 		}else{
 			return fetch(value)
 				.then(data=>{
-					this.data=data
-					return super.parse(docx)
+					if(!data){
+						console.error("no data at "+value)
+					}else{
+						this.data=data
+						return super.parse(docx)
+					}
+				}, e=>{
+					console.error(e)
 				})
 		}
 	}

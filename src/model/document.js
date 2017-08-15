@@ -1,4 +1,6 @@
 const esprima = require("esprima")
+const babel = require("babel-core")
+
 import escodegen from "escodegen"
 import {ID} from "./variant"
 
@@ -10,16 +12,12 @@ export default class Document{
 
 	assemble(data){
 		try{
-			let done=[]
 			let targetDoc=this.docx.clone()
-			this.engine.call(targetDoc, data, this.variants, targetDoc.officeDocument.content, done,escodegen)
-
-			const clear=()=>{
-				targetDoc.officeDocument.content(`[${ID}]`).removeAttr(ID)
-				return targetDoc
-			}
-
-			return Promise.all(done).then(clear)
+			return this.engine(targetDoc, data, this.variants, targetDoc.officeDocument.content, escodegen)
+				.then(staticDoc=>{
+					staticDoc.officeDocument.content(`[${ID}]`).removeAttr(ID)
+					return staticDoc
+				})
 		}catch(error){
 			console.error(error)
 		}
@@ -40,14 +38,23 @@ export default class Document{
 
 	get engine(){
 		let code=this.js({})
-		return new Function("data={},__variants, $, __promises, escodegen",code)
+		let engine=babel.transform(code)
+		console.log(engine.code)
+		return new Function("docx, __={},__variants, $, escodegen",`return ${engine.code}`)
 	}
 
 	js(options){
-		let code=esprima.parse("with(data){with(__variants){}}")
-		let codeBlock=code.body[0].body.body[0].body.body
+		let code=esprima.parse("(async function(){})()")
+		let codeBlock=code.body[0].expression.callee.body.body
 		this.children.forEach(a=>codeBlock.push(a.code))
-
+		codeBlock.push({
+			"type": "ReturnStatement",
+			"argument": {
+				"type": "Identifier",
+				"name": "docx"
+			}
+		})
+		
 		return options==undefined ? code : escodegen.generate(code,options)
 	}
 }

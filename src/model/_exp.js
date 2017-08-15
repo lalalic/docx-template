@@ -7,7 +7,7 @@ export default class Expression extends Variant{
 	constructor(){
 		super(...arguments)
 		let exp=this.code.body[0].expression
-		this.code=esprima.parse(`${this.id}.assemble(this,$('${this.selector}'))`).body[0]
+		this.code=esprima.parse(`${this.object}.assemble(docx,$('${this.selector}'))`).body[0]
 		this.code.expression.arguments.push(exp)
 	}
 

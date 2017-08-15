@@ -33,4 +33,8 @@ export default class Variant{
 	get selector(){
 		return `[${this.constructor.ID}=${this.id}]`
 	}
+	
+	get object(){
+		return `__variants.${this.id}`
+	}
 }
