@@ -18,7 +18,7 @@ describe("assemble", function(){
 
 	describe("assemble logic", function(){
 		let args=[expect.any(Object), expect.any(Object)]
-		it("${name}",()=>{ 
+		it("${name}",()=>{
 			return template(contents.exp("${__.name}")).then(varDoc=>{
 				let _exp=varDoc.children[0]
 				_exp.assemble=jest.fn()
@@ -173,7 +173,7 @@ describe("assemble", function(){
 		})
 
 		describe("for", function(){
-			it("for(var i=0;i<3;i++){'hello'}", function(){ 
+			it("for(var i=0;i<3;i++){'hello'}", function(){
 				return template(contents.for("<t>hello<t>","var i=0;i<3;i++")).then(varDoc=>{
 					return varDoc.assemble().then(staticDoc=>{
 						let text=staticDoc.officeDocument.content.text()
@@ -190,7 +190,7 @@ describe("assemble", function(){
 					})
 				})
 			})
-			
+
 			it("for(let i=0;i<__.employees.length;i++){let emp=__.employees[i];exp(name)}", function(){
 				return template(contents.for(contents.exp("${emp.name}"),"let i=0;i<3;i++", "{let emp=__.employees[i];}"))
 					.then(varDoc=>{
@@ -233,7 +233,7 @@ describe("assemble", function(){
 			return Promise.all([p1,p2])
 		})
 	})
-	
+
 	describe("sub document", function(){
 		const checkSubDoc=staticDoc=>{
 			let chunk=staticDoc.officeDocument.content("w\\:altChunk")
@@ -242,67 +242,67 @@ describe("assemble", function(){
 			let subDocPart=staticDoc.officeDocument.getRel(rId)
 			return staticDoc.constructor.load(subDocPart.asUint8Array())
 		}
-		fit("static sub document", ()=>{
-			return template(contents.subdoc("policy"))
-				.then(varDoc=>varDoc.assemble({policy: '<w:p/>'}))
+		it("static sub document", ()=>{
+			return template(contents.subdoc("__.policy"))
+				.then(varDoc=>{
+					return varDoc.assemble({policy: '<w:p/>'})
+				})
 				.then(checkSubDoc)
 		})
 
 		it("subdoc with ${exp}",  ()=>{
-			return template(contents.subdoc("policy"))
-				.then(varDoc=>varDoc.assemble({policy: contents.exp(),name:"raymond"}))
+			return template(contents.subdoc("__.policy"))
+				.then(varDoc=>{
+					return varDoc.assemble({policy: contents.exp("${__.name}"),name:"raymond"})
+				})
 				.then(checkSubDoc)
 				.then(subDoc=>{
 					expect(subDoc.officeDocument.content.text()).toBe("raymond")
 				})
 		})
-		
+
 		it("for(var i=0;i<count;i++){subdoc(policy)}",  ()=>{
-			return template(contents.for(contents.subdoc("policy"),"var i=0;i<count;i++"))
-				.then(varDoc=>varDoc.assemble({policy: contents.exp(),name:"raymond", count:3}))
+			return template(contents.for(contents.subdoc("__.policy"),"var i=0;i<__.count;i++"))
+				.then(varDoc=>varDoc.assemble({policy: contents.exp("${__.name}"),name:"raymond", count:3}))
 				.then(staticDoc=>{
 					let chunk=staticDoc.officeDocument.content("w\\:altChunk")
 					expect(chunk.length).toBe(3)
-					
+
 					let jobs=chunk.map((i,el)=>{
 						let rId=el.attribs["r:id"]
 						let subDocPart=staticDoc.officeDocument.getRel(rId)
 						return staticDoc.constructor.load(subDocPart.asUint8Array())
 					}).get()
-					
+
 					return Promise.all(jobs)
 				})
 				.then(subdocs=>{
 					subdocs.forEach(subDoc=>expect(subDoc.officeDocument.content.text()).toBe("raymond"))
 				})
 		})
-		
+
 		it("for(let i=0;i<employees.length;i++)with(employees[i]){subdoc(policy)}",  ()=>{
-			return template(contents.for(contents.subdoc("policy"),"let i=0;i<employees.length;i++", "with(employees[i])"))
+			return template(contents.for(contents.subdoc("__.policy"),"let i=0;i<__.employees.length;i++", "{let emp=__.employees[i];}"))
 				.then(varDoc=>{
-					console.log(varDoc.js({}))
 					return varDoc.assemble({
-						policy: contents.exp("${name}"),
+						policy: contents.exp("${emp.name}"),
 						employees:[{name:"raymond0"},{name:"raymond1"},{name:"raymond2"}]
 					})
 				})
 				.then(staticDoc=>{
 					let chunk=staticDoc.officeDocument.content("w\\:altChunk")
 					expect(chunk.length).toBe(3)
-					console.log(staticDoc.officeDocument.content.xml())
-					
+
 					let jobs=chunk.map((i,el)=>{
 						let rId=el.attribs["r:id"]
-						console.dir({rId})
 						let subDocPart=staticDoc.officeDocument.getRel(rId)
 						return staticDoc.constructor.load(subDocPart.asUint8Array())
 					}).get()
-					
+
 					return Promise.all(jobs)
 				})
 				.then(subdocs=>{
 					let created=subdocs.map(subDoc=>subDoc.officeDocument.content.text())
-					console.log(created.join(""))
 					let all=["raymond0","raymond1","raymond2"].filter(a=>!created.includes(a))
 					expect(all.length).toBe(0)
 				})

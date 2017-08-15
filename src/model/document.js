@@ -13,7 +13,7 @@ export default class Document{
 	assemble(data){
 		try{
 			let targetDoc=this.docx.clone()
-			return this.engine(targetDoc, data, this.variants, targetDoc.officeDocument.content, escodegen)
+			return this.engine(targetDoc, data, this.variants, targetDoc.officeDocument.content)
 				.then(staticDoc=>{
 					staticDoc.officeDocument.content(`[${ID}]`).removeAttr(ID)
 					return staticDoc
@@ -38,9 +38,8 @@ export default class Document{
 
 	get engine(){
 		let code=this.js({})
-		let engine=babel.transform(code)
-		console.log(engine.code)
-		return new Function("docx, __={},__variants, $, escodegen",`return ${engine.code}`)
+		//let engine=babel.transform(code,{presets: ["es2015", "es2017"]})
+		return new Function("docx, __={}, __variants, $",`return ${code}`)
 	}
 
 	js(options){
@@ -54,7 +53,7 @@ export default class Document{
 				"name": "docx"
 			}
 		})
-		
+
 		return options==undefined ? code : escodegen.generate(code,options)
 	}
 }
