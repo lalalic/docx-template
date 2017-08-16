@@ -8,7 +8,12 @@
 		function test(input){
 			docxTemplate.parse(input.files[0])
 				.then(function(varDoc){
-					input.value=""
+					document.querySelector("[type=file]").value=""
+					document.querySelector('#js').value=varDoc.toString({comment:true})+"\r\n**********\r\n"+varDoc.js()
+					let data=eval("("+document.querySelector("#data").value+")")
+					varDoc.assemble(data).then(docx=>docx.save("test.docx"))
+				}, function(e){
+					document.querySelector("[type=file]").value=""
 				})
 		}
 	</script>
@@ -18,5 +23,6 @@
 	<br/>
 	<br/>
 	<textarea placeholder="json data for assembly" id="data" style="width:98%;height:200px"></textarea>
+	<textarea id="js" style="width:98%;height:200px"></textarea>
 </body>
 </html>

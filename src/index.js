@@ -1,3 +1,4 @@
+require('babel-polyfill')
 const esprima=require("esprima")
 import docx4js from "docx4js"
 import unescape from "lodash.unescape"
@@ -35,6 +36,15 @@ export class DocxTemplate extends docx4js{
 		}
 		return false
 	}
+	
+	static isInlineExp(type,text,node){
+		if(type=="control.text"){
+			if(DocxTemplate.isExp(text)){
+				return text
+			}
+		}
+		return false
+	}
 
 	static identify(node, officeDocument, filter=true){
 		if(filter){
@@ -57,12 +67,21 @@ export class DocxTemplate extends docx4js{
 
 		let tag=sdtPr.children.find(a=>a.name=="w:tag")
 
-		if(!tag)
+		if(!tag){
+			if(tag=DocxTemplate.isInlineExp(model.type, officeDocument.content(node).text().trim())){
+				officeDocument.content(node)
+					.find('w\\:id')
+					.before(`<w:tag w:val="${tag}"/>`)
+			}else{
+				return model
+			}
+		}else{
+			tag=tag.attribs["w:val"]
+		}
+		
+		if(!tag){
 			return model
-
-		tag=tag.attribs["w:val"]
-		if(!tag)
-			return model
+		}
 
 		tag=unescape(tag.trim())
 
@@ -114,7 +133,11 @@ export class DocxTemplate extends docx4js{
 							return model
 					}
 				}catch(error){
-					console.log(`[${model.type}] with ${tag}, but not variant`)
+					if(DocxTemplate.isExp(tag)){
+						console.warn(`${tag}: please use plain text control for expression`)
+					}else{
+						console.log(`[${model.type}] with ${tag}, but not variant because ${error}`)
+					}
 				}
 		}
 		delete model.rawCode

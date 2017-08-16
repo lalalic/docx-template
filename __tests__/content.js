@@ -59,6 +59,21 @@ export default {
 				</w:p>
 			</w:sdtContent>
 		</w:sdt>`,
+	"inlineExp":a=>`
+		<w:sdt>
+			<w:sdtPr>
+				<w:id w:val="12965037"/>
+				<w:text/>
+			</w:sdtPr>
+			<w:sdtEndPr/>
+			<w:sdtContent>
+				<w:p>
+					<w:r>
+						<w:t>${a||"${name}"}</w:t>
+					</w:r>
+				</w:p>
+			</w:sdtContent>
+		</w:sdt>`,
 	"subdoc":(a="policy")=>`
 		<w:sdt>
 			<w:sdtPr>

@@ -1,4 +1,5 @@
 const esprima=require("esprima")
+import escodegen from "escodegen"
 import Variant from "./variant"
 
 export default class Expression extends Variant{
@@ -17,6 +18,5 @@ export default class Expression extends Variant{
 		}else{
 			node.find('w\\:t').remove(i=>i!=0).first().text(value)
 		}
-		
 	}
 }

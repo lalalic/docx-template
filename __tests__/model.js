@@ -25,6 +25,10 @@ describe("docx template models", function(){
         it("can identify expression control", function(){
             identify(contents["exp"](),"control.text.exp")
         })
+		
+		it("can identify inline expression control", function(){
+			identify(contents["inlineExp"](),"control.text.exp")
+		})
 
         it("can identify picture", function(){
             identify(contents["picture"](),"control.picture.exp")
@@ -61,6 +65,10 @@ describe("docx template models", function(){
 			it("can identify expression control", function(){
 				return check(contents["exp"](),"variant.exp")
 			})
+			
+			it("can identify inline expression control", function(){
+				return check(contents["inlineExp"](),"variant.exp")
+			})
 
 			it("can identify picture", function(){
 				return check(contents["picture"](),"variant.picture")
@@ -86,11 +94,12 @@ describe("docx template models", function(){
 				})
 			})
 
-			it("if(){for,exp}", function(){
-				return template(contents["if"](`${contents["for"]()}${contents["exp"]()}`)).then(varDoc=>{
+			it("if(){for,exp, inline exp}", function(){
+				return template(contents["if"](`${contents["for"]()}${contents["exp"]()}${contents["inlineExp"]()}`)).then(varDoc=>{
 					expect(varDoc.children[0].constructor.type).toBe("variant.if")
 					expect(varDoc.children[0].children[0].constructor.type).toBe("variant.for")
 					expect(varDoc.children[0].children[1].constructor.type).toBe("variant.exp")
+					expect(varDoc.children[0].children[2].constructor.type).toBe("variant.exp")
 				})
 			})
 

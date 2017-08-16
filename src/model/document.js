@@ -1,5 +1,7 @@
 const esprima = require("esprima")
 const babel = require("babel-core")
+import es2015 from "babel-preset-es2015"
+import es2017 from "babel-preset-es2017"
 
 import escodegen from "escodegen"
 import {ID} from "./variant"
@@ -54,15 +56,40 @@ export default class Document{
 		
 		code=escodegen.generate(code,options)
 		
-		code=babel.transform(code,{presets: ["es2015", "es2017"]}).code
+		code=babel.transform(code,{presets: [es2015, es2017],plugins:[]}).code
 		code=esprima.parse(code)
 		let result=code.body[2].expression
 		code.body[2]={
 			type: "ReturnStatement",
 			argument: result
 		}
+		
 		code=escodegen.generate(code,{})
 
+		return code
+	}
+	
+	toString(options){
+		let code=esprima.parse("(async function(){})()")
+		let codeBlock=code.body[0].expression.callee.body.body
+		this.children.forEach(a=>{
+			if(a.comment){
+				a.code.leadingComments=[{
+					type:"Block",
+					value: a.comment
+				}]
+			}
+			codeBlock.push(a.code)
+		})
+		codeBlock.push({
+			"type": "ReturnStatement",
+			"argument": {
+				"type": "Identifier",
+				"name": "docx"
+			}
+		})
+		
+		code=escodegen.generate(code,options)
 		return code
 	}
 }

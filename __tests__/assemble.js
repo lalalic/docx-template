@@ -41,6 +41,15 @@ describe("assemble", function(){
 					.then(staticDoc=>expect(_exp.assemble).toBeCalledWith(...args.concat(["abc"])))
 			})
 		})
+		
+		it("inline ${name}",()=>{
+			return template(contents.inlineExp("${__.name}")).then(varDoc=>{
+				let _exp=varDoc.children[0]
+				_exp.assemble=jest.fn()
+				return varDoc.assemble({name:"abc"})
+					.then(staticDoc=>expect(_exp.assemble).toBeCalledWith(...args.concat(["abc"])))
+			})
+		})
 
 		it("picture",()=>{
 			return template(contents.picture("${__.photo}")).then(varDoc=>{
@@ -71,6 +80,20 @@ describe("assemble", function(){
 
 		it("if(){exp(name)}",()=>{
 			return template(contents.if(contents.exp("${__.name}"))).then(varDoc=>{
+				let _if=varDoc.children[0]
+				_if.assemble=jest.fn()
+				let _exp=_if.children[0]
+				_exp.assemble=jest.fn()
+				return varDoc.assemble({name:"abc"})
+					.then(staticDoc=>{
+						expect(_if.assemble).toBeCalledWith(...args.concat([true]))
+						expect(_exp.assemble).toBeCalledWith(...args.concat(["abc"]))
+					})
+			})
+		})
+		
+		it("if(){inline exp(name)}",()=>{
+			return template(contents.if(contents.inlineExp("${__.name}"))).then(varDoc=>{
 				let _if=varDoc.children[0]
 				_if.assemble=jest.fn()
 				let _exp=_if.children[0]
@@ -151,6 +174,34 @@ describe("assemble", function(){
 				return template(contents.exp("${__.name}")).then(varDoc=>{
 					return varDoc.assemble({name:undefined})
 						.then(staticDoc=>expect(staticDoc.officeDocument.content.text()).toBe(""))
+				})
+			})
+			
+			describe("inline expression", function(){
+				it("${name}='abc'",()=>{
+					return template(contents.inlineExp("${__.name}")).then(varDoc=>{
+						return varDoc.assemble({name:"abc"})
+							.then(staticDoc=>expect(staticDoc.officeDocument.content.text()).toMatch("abc"))
+					})
+				})
+
+				it("${}==null",()=>{
+					return template(contents.inlineExp("${__.name}")).then(varDoc=>{
+						return varDoc.assemble({name:null})
+							.then(staticDoc=>expect(staticDoc.officeDocument.content.text()).toBe(""))
+					})
+				})
+				it("${}==''",()=>{
+					return template(contents.inlineExp("${__.name}")).then(varDoc=>{
+						return varDoc.assemble({name:""})
+							.then(staticDoc=>expect(staticDoc.officeDocument.content.text()).toBe(""))
+					})
+				})
+				it("${}==undefined",()=>{
+					return template(contents.inlineExp("${__.name}")).then(varDoc=>{
+						return varDoc.assemble({name:undefined})
+							.then(staticDoc=>expect(staticDoc.officeDocument.content.text()).toBe(""))
+					})
 				})
 			})
 		})
@@ -322,12 +373,12 @@ describe("assemble", function(){
 				})
 		})
 		
-		fit("nested subdoc", function(){
+		it("nested subdoc", function(){
 						return template(contents.for(contents.subdoc("__.policy"),"let i=0;i&lt;__.employees.length;i++", "{let emp=__.employees[i];}"))
 				.then(varDoc=>{
 					return varDoc.assemble({
 						policy: contents.exp("${emp.name}")+contents.subdoc("__.sale"),
-						sale: contents.exp("${emp.name+'good'}"),
+						sale: contents.inlineExp("${emp.name+'good'}"),
 						employees:[{name:"raymond0"},{name:"raymond1"},{name:"raymond2"}]
 					})
 				})
