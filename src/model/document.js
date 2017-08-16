@@ -37,19 +37,10 @@ export default class Document{
 	}
 
 	get engine(){
-		let code=this.js({})
-		code=babel.transform(code,{presets: ["es2015", "es2017"]}).code
-		code=esprima.parse(code)
-		let result=code.body[2].expression
-		code.body[2]={
-			type: "ReturnStatement",
-			argument: result
-		}
-		code=escodegen.generate(code,{})
-		return new Function("docx, __, __variants, $",code)
+		return new Function("docx, __, __variants, $",this.js())
 	}
 
-	js(options){
+	js(options={}){
 		let code=esprima.parse("(async function(){})()")
 		let codeBlock=code.body[0].expression.callee.body.body
 		this.children.forEach(a=>codeBlock.push(a.code))
@@ -60,7 +51,18 @@ export default class Document{
 				"name": "docx"
 			}
 		})
+		
+		code=escodegen.generate(code,options)
+		
+		code=babel.transform(code,{presets: ["es2015", "es2017"]}).code
+		code=esprima.parse(code)
+		let result=code.body[2].expression
+		code.body[2]={
+			type: "ReturnStatement",
+			argument: result
+		}
+		code=escodegen.generate(code,{})
 
-		return options==undefined ? code : escodegen.generate(code,options)
+		return code
 	}
 }

@@ -1,3 +1,16 @@
+jest.mock("isomorphic-fetch", ()=>{
+	return function(content){
+		const DocxTemplate=require("../src").default
+		return DocxTemplate.create().then(docx=>{
+			let relDoc=docx.main.getRelTarget("officeDocument")
+			docx.officeDocument.content("w\\:p").replaceWith("${content}")
+			let xml=docx.officeDocument.content.xml().replace("${content}",content)
+			docx.parts[relDoc]=DocxTemplate.parseXml(xml)
+			return docx.serialize().generate({type:"nodebuffer"})
+		})
+	}
+})
+
 import docx4js from "docx4js"
 import DocxTemplate from "../src"
 import contents from "./content"
@@ -5,7 +18,9 @@ import contents from "./content"
 describe("assemble", function(){
 	const template=content=>DocxTemplate.create().then(docx=>{
 		let relDoc=docx.main.getRelTarget("officeDocument")
-		docx.parts[relDoc]=DocxTemplate.parseXml(`<w:document><w:body>${content}<w:sectPr/></w:body></w:document>`)
+		docx.officeDocument.content("w\\:p").replaceWith("${content}")
+		let xml=docx.officeDocument.content.xml().replace("${content}",content)
+		docx.parts[relDoc]=DocxTemplate.parseXml(xml)
 		return docx
 	}).then(docx=>DocxTemplate.parse(docx))
 
@@ -262,7 +277,7 @@ describe("assemble", function(){
 		})
 
 		it("for(var i=0;i<count;i++){subdoc(policy)}",  ()=>{
-			return template(contents.for(contents.subdoc("__.policy"),"var i=0;i<__.count;i++"))
+			return template(contents.for(contents.subdoc("__.policy"),"var i=0;i&lt;__.count;i++"))
 				.then(varDoc=>varDoc.assemble({policy: contents.exp("${__.name}"),name:"raymond", count:3}))
 				.then(staticDoc=>{
 					let chunk=staticDoc.officeDocument.content("w\\:altChunk")
@@ -273,7 +288,6 @@ describe("assemble", function(){
 						let subDocPart=staticDoc.officeDocument.getRel(rId)
 						return staticDoc.constructor.load(subDocPart.asUint8Array())
 					}).get()
-
 					return Promise.all(jobs)
 				})
 				.then(subdocs=>{
@@ -282,7 +296,7 @@ describe("assemble", function(){
 		})
 
 		it("for(let i=0;i<employees.length;i++)with(employees[i]){subdoc(policy)}",  ()=>{
-			return template(contents.for(contents.subdoc("__.policy"),"let i=0;i<__.employees.length;i++", "{let emp=__.employees[i];}"))
+			return template(contents.for(contents.subdoc("__.policy"),"let i=0;i&lt;__.employees.length;i++", "{let emp=__.employees[i];}"))
 				.then(varDoc=>{
 					return varDoc.assemble({
 						policy: contents.exp("${emp.name}"),
@@ -304,6 +318,46 @@ describe("assemble", function(){
 				.then(subdocs=>{
 					let created=subdocs.map(subDoc=>subDoc.officeDocument.content.text())
 					let all=["raymond0","raymond1","raymond2"].filter(a=>!created.includes(a))
+					expect(all.length).toBe(0)
+				})
+		})
+		
+		fit("nested subdoc", function(){
+						return template(contents.for(contents.subdoc("__.policy"),"let i=0;i&lt;__.employees.length;i++", "{let emp=__.employees[i];}"))
+				.then(varDoc=>{
+					return varDoc.assemble({
+						policy: contents.exp("${emp.name}")+contents.subdoc("__.sale"),
+						sale: contents.exp("${emp.name+'good'}"),
+						employees:[{name:"raymond0"},{name:"raymond1"},{name:"raymond2"}]
+					})
+				})
+				.then(staticDoc=>{
+					let chunk=staticDoc.officeDocument.content("w\\:altChunk")
+					expect(chunk.length).toBe(3)
+
+					let jobs=chunk.map((i,el)=>{
+						let rId=el.attribs["r:id"]
+						let subDocPart=staticDoc.officeDocument.getRel(rId)
+						return staticDoc.constructor.load(subDocPart.asUint8Array())
+					}).get()
+
+					return Promise.all(jobs)
+				})
+				.then(subdocs=>{
+					let created=subdocs.map(subDoc=>subDoc.officeDocument.content.text())
+					let all=["raymond0","raymond1","raymond2"].filter(a=>!created.includes(a))
+					expect(all.length).toBe(0)
+					return Promise.all(subdocs.map(staticDoc=>{
+						let chunk=staticDoc.officeDocument.content("w\\:altChunk")
+						expect(chunk.length).toBe(1)
+						let rId=chunk.attr("r:id")
+						let subDocPart=staticDoc.officeDocument.getRel(rId)
+						return staticDoc.constructor.load(subDocPart.asUint8Array())
+					}))
+				})
+				.then(nestedSubDocs=>{
+					let created=nestedSubDocs.map(subDoc=>subDoc.officeDocument.content.text())
+					let all=["raymond0good","raymond1good","raymond2good"].filter(a=>!created.includes(a))
 					expect(all.length).toBe(0)
 				})
 		})
