@@ -1342,9 +1342,9 @@ diffie-hellman@^5.0.0:
     miller-rabin "^4.0.0"
     randombytes "^2.0.0"
 
-"docx4js@https://github.com/lalalic/docx4js":
+docx4js@^3.1.6:
   version "3.1.6"
-  resolved "https://github.com/lalalic/docx4js#b413fa954f9875bfdb489e73b3f29a8795d00804"
+  resolved "https://registry.yarnpkg.com/docx4js/-/docx4js-3.1.6.tgz#500e1632370b74ded83c6b6522d4255a9bf76593"
   dependencies:
     cheerio "^0.22.0"
     jszip "^2.6.0"

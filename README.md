@@ -36,3 +36,6 @@ docxTemplate.parse("~/template.docx").then(varDoc=>{
 
 # Todo
 * remove placeholder media/picture
+
+# License
+GPL
