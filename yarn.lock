@@ -1342,11 +1342,12 @@ diffie-hellman@^5.0.0:
     miller-rabin "^4.0.0"
     randombytes "^2.0.0"
 
-docx4js@^3.1.6:
-  version "3.1.6"
-  resolved "https://registry.yarnpkg.com/docx4js/-/docx4js-3.1.6.tgz#500e1632370b74ded83c6b6522d4255a9bf76593"
+docx4js@^3.1.7:
+  version "3.1.7"
+  resolved "https://registry.yarnpkg.com/docx4js/-/docx4js-3.1.7.tgz#4332f268b38fe32b8f3f42709acdd503bdc7b359"
   dependencies:
     cheerio "^0.22.0"
+    htmlparser2 "^3.9.2"
     jszip "^2.6.0"
 
 dom-serializer@0, dom-serializer@~0.1.0:
@@ -1757,7 +1758,7 @@ htmlescape@^1.1.0:
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/htmlescape/-/htmlescape-1.1.1.tgz#3a03edc2214bca3b66424a3e7959349509cb0351"
 
-htmlparser2@^3.9.1:
+htmlparser2@^3.9.1, htmlparser2@^3.9.2:
   version "3.9.2"
   resolved "https://registry.yarnpkg.com/htmlparser2/-/htmlparser2-3.9.2.tgz#1bdf87acca0f3f9e53fa4fcceb0f4b4cbb00b338"
   dependencies:
