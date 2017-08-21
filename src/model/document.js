@@ -1,5 +1,5 @@
-const esprima = require("esprima")
-const babel = require("babel-core")
+import * as esprima  from "esprima"
+import * as babel from "babel-core"
 import es2015 from "babel-preset-es2015"
 import es2017 from "babel-preset-es2017"
 

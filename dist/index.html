@@ -3,14 +3,14 @@
 <head>
 	<script src="index.js"></script>
 	<script>
-		var docxTemplate=require("docx-template").default
+		var docxTemplate=require("docx-template").DocxTemplate
 		
 		function test(input){
 			docxTemplate.parse(input.files[0])
 				.then(function(varDoc){
 					document.querySelector("[type=file]").value=""
 					document.querySelector('#js').value=varDoc.toString({comment:true})+"\r\n**********\r\n"+varDoc.js()
-					let data=eval("("+document.querySelector("#data").value+")")
+					let data=eval("("+(document.querySelector("#data").value.trim()||"{}")+")")
 					varDoc.assemble(data).then(docx=>docx.save("test.docx"))
 				}, function(e){
 					document.querySelector("[type=file]").value=""

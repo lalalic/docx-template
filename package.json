@@ -1,7 +1,7 @@
 {
   "name": "docx-template",
   "description": "customizing docx template with data",
-  "version": "2.1.3",
+  "version": "2.1.4",
   "author": {
     "name": "Raymond Li",
     "email": "lalalic@139.com"
@@ -56,6 +56,7 @@
     "sourceMaps": "inline"
   },
   "main": "lib/",
+  "browser": "lib/browser",
   "scripts": {
     "compile": "babel src -d lib",
     "compile-superdaddy": "babel src -d ../superdaddy/node_modules/docx-template/lib",
