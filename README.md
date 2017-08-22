@@ -3,7 +3,8 @@ create personalized docx from docx template and data
 
 # supported variants following javascript language
 ## any javascript expression
-<b>plain</b> text form control's <b>tag</b> with pattern <b>${...}</b>
+*<b>plain</b> text form control's <b>tag</b> with pattern <b>${...}</b>
+*<b>plain</b> text form control's content with pattern <b>${...}</b>
 
 ## picture variable
 picture form control's <b>tag</b> with expression pattern <b>${...}</b>
@@ -21,7 +22,7 @@ richtext form control's <b>tag</b> with pattern <b>subdoc(...)</b>
 # API
 ## parse(template.docx)
 return Promise, resolved with a VariantDocx with following api
-	* assemble({}/*data*/): return Promise resolved docx4js instance
+	* assemble({}/*data*/, {clearWrap=true/*default clear sdt*/}/*option*/): return Promise resolved docx4js instance
 
 # Example
 
@@ -35,7 +36,7 @@ docxTemplate.parse("~/template.docx").then(varDoc=>{
 </pre>
 
 # Todo
-* remove placeholder media/picture
+* support javascript file for functions
 
 # License
 GPL
