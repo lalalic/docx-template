@@ -14,6 +14,7 @@ jest.mock("isomorphic-fetch", ()=>{
 import docx4js from "docx4js"
 import DocxTemplate from "../src"
 import contents from "./content"
+import xmlescape from "xml-escape"
 
 describe("assemble", function(){
 	const template=content=>DocxTemplate.create().then(docx=>{
@@ -32,7 +33,7 @@ describe("assemble", function(){
 	})
 
 	describe("assemble logic", function(){
-		let args=[expect.any(Object), expect.any(Object)]
+		let args=[expect.any(Object), expect.any(Object),expect.any(Object)]
 		it("${name}",()=>{
 			return template(contents.exp("${__.name}")).then(varDoc=>{
 				let _exp=varDoc.children[0]
@@ -157,6 +158,28 @@ describe("assemble", function(){
 						.then(staticDoc=>expect(staticDoc.officeDocument.content.text()).toMatch("abc"))
 				})
 			})
+			
+			it("${name}='abc', option={clearWrap}",()=>{
+				return template(contents.exp("${__.name}")).then(varDoc=>{
+					return Promise.all([
+						varDoc.assemble({name:"abc"})
+							.then(staticDoc=>{
+								expect(staticDoc.officeDocument.content("w\\:sdt").length).toBe(0)
+							}),
+						varDoc.assemble({name:"abc"},{clearWrap:false})
+							.then(staticDoc=>{
+								expect(staticDoc.officeDocument.content("w\\:sdt").length).toBe(1)
+							})
+					])
+				})
+			})
+			
+			it(`${name}=<&'">`,()=>{
+				return template(contents.exp("${__.name}")).then(varDoc=>{
+					return varDoc.assemble({name:`<&'">`})
+						.then(staticDoc=>expect(staticDoc.officeDocument.content.text()).toMatch(xmlescape(`<&'">`)))
+				})
+			})			
 
 			it("${}==null",()=>{
 				return template(contents.exp("${__.name}")).then(varDoc=>{
@@ -215,7 +238,7 @@ describe("assemble", function(){
 						expect(staticDoc.officeDocument.rels("Relationship").length).toBe(rels+1)
 						let blip=staticDoc.officeDocument.content("a\\:blip")
 						expect(blip.length).toBe(1)
-						let rid=blip.attr("r:embed")
+						let rid=blip.attr("r:link")
 						expect(rid).toMatch(/^rId\d?/)
 					})
 				})

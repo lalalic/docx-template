@@ -1,3 +1,4 @@
+import xmlescape from "xml-escape"
 let uuid=0
 export default class Variant{
 	static ID="dtid"
@@ -48,5 +49,9 @@ export default class Variant{
 	
 	get object(){
 		return `__variants.${this.id}`
+	}
+	
+	xmlescape(v){
+		return xmlescape(v.toString())
 	}
 }

@@ -12,10 +12,10 @@ export default class Document{
 		this.children=children||[]
 	}
 
-	assemble(data){
+	assemble(data, opt={clearWrap:true}){
 		try{
 			let targetDoc=this.docx.clone()
-			return this.engine(targetDoc, data, this.variants, targetDoc.officeDocument.content)
+			return this.engine(targetDoc, data, this.variants, targetDoc.officeDocument.content, opt)
 				.then(staticDoc=>{
 					staticDoc.officeDocument.content(`[${ID}]`).removeAttr(ID)
 					return staticDoc
@@ -39,37 +39,37 @@ export default class Document{
 	}
 
 	get engine(){
-		return new Function("docx, __, __variants, $",this.js())
+		return new Function("docx, __, __variants, $, __opt",this.js())
 	}
+	
+	static ES7=(function(){
+		try{
+			eval(`(async function(){})`)
+			return false
+		}catch(e){
+			return false
+		}
+	})()
 
 	js(options={}){
-		let code=esprima.parse("(async function(){})()")
-		let codeBlock=code.body[0].expression.callee.body.body
-		this.children.forEach(a=>codeBlock.push(a.code))
-		codeBlock.push({
-			"type": "ReturnStatement",
-			"argument": {
-				"type": "Identifier",
-				"name": "docx"
+		let code=this.toString(options)
+		
+		if(!this.constructor.ES7){
+			code=babel.transform(code,{presets: [es2015, es2017],plugins:[]}).code
+			code=esprima.parse(code)
+			let result=code.body[2].expression
+			code.body[2]={
+				type: "ReturnStatement",
+				argument: result
 			}
-		})
-		
-		code=escodegen.generate(code,options)
-		
-		code=babel.transform(code,{presets: [es2015, es2017],plugins:[]}).code
-		code=esprima.parse(code)
-		let result=code.body[2].expression
-		code.body[2]={
-			type: "ReturnStatement",
-			argument: result
+			
+			code=escodegen.generate(code,{})
 		}
-		
-		code=escodegen.generate(code,{})
 
 		return code
 	}
 	
-	toString(options){
+	toString(options={}){
 		let code=esprima.parse("(async function(){})()")
 		let codeBlock=code.body[0].expression.callee.body.body
 		this.children.forEach(a=>{

@@ -13,9 +13,9 @@ export default class If extends Variant{
 
 		const {consequent,alternate}=esprima.parse(`
 			if(a){
-				${this.object}.assemble(docx, $('${this.selector}'),true)
+				${this.object}.assemble(docx, $('${this.selector}'), __opt,true)
 			}else{
-				${this.object}.assemble(docx, $('${this.selector}'),false)
+				${this.object}.assemble(docx, $('${this.selector}'), __opt,false)
 			}
 		`).body[0]
 
@@ -25,8 +25,11 @@ export default class If extends Variant{
 		this.code.body[0].alternate=alternate
 	}
 
-	assemble(docx, node, satified){
-		if(!satified)
+	assemble(docx, node, {clearWrap}, satified){
+		if(!satified){
 			node.remove()
+		}else if(clearWrap){
+			node.replaceWith(node.find(">w\\:sdtContent").children())
+		}
 	}
 }

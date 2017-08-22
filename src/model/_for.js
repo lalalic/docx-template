@@ -11,7 +11,7 @@ export default class For extends Variant{
 			codeBlock=codeBlock.body
 
 		this.children.forEach(a=>codeBlock.push(a.code))
-		codeBlock.push(esprima.parse(`${this.object}.assemble(docx,$('${this.selector}'))`).body[0])
+		codeBlock.push(esprima.parse(`${this.object}.assemble(docx,$('${this.selector}'), __opt)`).body[0])
 		
 		this.code.body.unshift(esprima.parse(`${this.object}.assembling(docx,$('${this.selector}'))`).body[0])
 		this.code.body.push(esprima.parse(`${this.object}.assembled(docx,$('${this.selector}'))`).body[0])
@@ -23,8 +23,8 @@ export default class For extends Variant{
 	}
 
 	//loop run after each child assembled
-	assemble(docx,node){
-		this._results.push(node)
+	assemble(docx,node, {clearWrap}){
+		this._results.push(clearWrap ? node.find(">w\\:sdtContent").children() : node)
 		node.replaceWith(this._template.clone())
 	}
 

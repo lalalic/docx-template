@@ -1,4 +1,4 @@
-const esprima=require("esprima")
+import * as esprima from "esprima"
 import docx4js from "docx4js"
 import unescape from "lodash.unescape"
 
@@ -20,9 +20,9 @@ export class DocxTemplate extends docx4js{
         return this.load(file).then(_parse)
     }
 
-    static assemble(file,data){
+    static assemble(file,data, opt){
         return this.parse(file)
-			.then(varDoc=>varDoc.assemble(data))
+			.then(varDoc=>varDoc.assemble(data, opt))
     }
 
 	static isExp(text){
