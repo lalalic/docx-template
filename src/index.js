@@ -96,6 +96,9 @@ export class DocxTemplate extends docx4js{
 
 					model.type=`${model.type}.exp`
 					model.code=esprima.parse(exp)
+					if(filter){
+						model.children=null
+					}
 					return model
 				} catch(e){
 					console.error(`[${model.type}] ${tag} \r\n ${error.message}`)
