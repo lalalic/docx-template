@@ -21,7 +21,9 @@ export default class SubDoc extends Variant{
 					let targetDoc=varDoc.docx.clone()
 					let subdoc=eval("(function(docx, __variants,$){"+code+"})")
 					let staticDoc=await subdoc(targetDoc,variants,targetDoc.officeDocument.content)
-					staticDoc.officeDocument.content("[${ID}]").removeAttr("${ID}")
+					if(!__opt.clearWrap){
+						staticDoc.officeDocument.content("[${ID}]").removeAttr("${ID}")
+					}
 					let zip=staticDoc.serialize()
 					let data=zip.generate({type:"nodebuffer"})
 					${this.object}.assemble(docx, node, data)

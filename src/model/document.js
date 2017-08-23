@@ -17,7 +17,9 @@ export default class Document{
 			let targetDoc=this.docx.clone()
 			return this.engine(targetDoc, data, this.variants, targetDoc.officeDocument.content, opt)
 				.then(staticDoc=>{
-					staticDoc.officeDocument.content(`[${ID}]`).removeAttr(ID)
+					if(!opt.clearWrap){
+						staticDoc.officeDocument.content(`[${ID}]`).removeAttr(ID)
+					}
 					return staticDoc
 				})
 		}catch(error){
