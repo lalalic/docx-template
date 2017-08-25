@@ -1342,9 +1342,9 @@ diffie-hellman@^5.0.0:
     miller-rabin "^4.0.0"
     randombytes "^2.0.0"
 
-docx4js@^3.1.9:
-  version "3.1.9"
-  resolved "https://registry.yarnpkg.com/docx4js/-/docx4js-3.1.9.tgz#1882e5fd44b885550e577a9a7b07c8a8b099b2d7"
+docx4js@^3.1.10:
+  version "3.1.10"
+  resolved "https://registry.yarnpkg.com/docx4js/-/docx4js-3.1.10.tgz#def896ca64e7604e90c830ac30dbf430f68e0418"
   dependencies:
     cheerio "^0.22.0"
     htmlparser2 "^3.9.2"
