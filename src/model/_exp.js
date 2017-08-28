@@ -1,4 +1,4 @@
-const esprima=require("esprima")
+import * as esprima from "esprima"
 import escodegen from "escodegen"
 import Variant from "./variant"
 

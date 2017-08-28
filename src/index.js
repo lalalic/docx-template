@@ -6,6 +6,8 @@ import VariantHandler from "./variant-handler"
 
 const VARIANTS="control.picture,control.text,block,inline".split(",")
 
+
+
 export class DocxTemplate extends docx4js{
 	/**
 	* entry: parse template as a variant document, then you can assemble with data
@@ -94,8 +96,8 @@ export class DocxTemplate extends docx4js{
 					if(!exp)
 						return model
 
-					model.type=`${model.type}.exp`
 					model.code=esprima.parse(exp)
+					model.type=`${model.type}.exp`
 					if(filter){
 						model.children=null
 					}
@@ -106,10 +108,42 @@ export class DocxTemplate extends docx4js{
 			case "block":
 			case "inline":
 				try {
-					if(tag.startsWith("subdoc(")){
+					if(tag.startsWith("include(")){
+						let code=esprima.parse(tag).body[0].expression.arguments[0]
+						if(!code){
+							let ole=officeDocument.content(node).find("w\\:object").get(0)
+							if(ole){
+								let {data,embed,prog}=ole=docx4js.OfficeDocument.identify(ole,officeDocument)
+								if(prog.startsWith("Word.Document.") && embed){
+									model.code=data
+									model.type=`${model.type}.embed.subdoc`
+									if(filter){
+										model.children=null
+									}
+									return model
+								}
+							}
+							throw new Error("tag like include(), but it's not")
+						}
+						model.code=code
 						model.type=`${model.type}.subdoc`
-						model.code=esprima.parse(tag).body[0].expression.arguments[0]
+						if(filter){
+							model.children=null
+						}
 						return model
+					}
+					if(tag.startsWith("script(")){
+						let ole=officeDocument.content(node).find("w\\:object").get(0)
+						if(ole){
+							let {data:code}=docx4js.OfficeDocument.identify(ole,officeDocument)
+							model.code=esprima.parse(code||"")
+							model.type=`${model.type}.script`
+							if(filter){
+								model.children=null
+							}
+							return model
+						}
+						throw new Error("tag like script(), but it's not")
 					}
 					let parsedCode=esprima.parse(tag+'{}')
 					if(parsedCode.body.length==2)//for/if(){}{}

@@ -16,8 +16,11 @@ richtext form control's <b>tag</b> with pattern <b>if(...)[with][{...}]</b>
 richtext form control's <b>tag</b> with pattern <b>for(;;)[with][{...}]</b>
 
 ## sub document
-richtext form control's <b>tag</b> with pattern <b>subdoc(...)</b>
+* dynamic: richtext form control's <b>tag</b> with pattern <b>include(exp:subdoc url)</b>
+* embed: richtext form control's <b>tag</b> with pattern <b>include()</b>, and content is embeded word ole object
 
+## import javascript code
+richtext form control's <b>tag</b> with pattern <b>script(...)</b>, and content is embeded javascript ole object 
 
 # API
 ## parse(template.docx)
@@ -37,6 +40,7 @@ docxTemplate.parse("~/template.docx").then(varDoc=>{
 
 # Todo
 * support javascript file for functions
+* inline subdoc
 
 # License
 GPL

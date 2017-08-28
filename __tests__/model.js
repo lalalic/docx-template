@@ -3,12 +3,12 @@ import contents from "./content"
 
 describe("docx template models", function(){
    describe("identifier", function(){
-        function identify(content,expected){
+        function identify(content,expected, officeDocument){
 			let $=DocxTemplate.parseXml(content)
 			let sdt=$("w\\:sdt").get(0)
 			expect(!!sdt).toBe(true)
 
-            let identified=DocxTemplate.identify(sdt,{content:$})
+            let identified=DocxTemplate.identify(sdt,Object.assign({content:$},officeDocument))
             expect(identified.type).toBe(expected)
 
             return identified
@@ -37,6 +37,18 @@ describe("docx template models", function(){
         it("can identify subdoc", function(){
             identify(contents["subdoc"](), "block.subdoc")
         })
+		
+		it("can identify embeded subdoc", function(){
+            identify(contents["subdoc"]("", contents["script"]("rId7", "Word.Document.12")), "block.embed.subdoc", {
+				getRelOleObject(){
+					return "let hello=()=>{};"
+				}
+			})
+        })
+		
+		it("can identify script", function(){
+			identify(contents["script"](), "block.script", {getRelOleObject:a=>"hello()"})
+		})
 	})
 
 	describe("models",function(){
@@ -76,6 +88,20 @@ describe("docx template models", function(){
 			
 			it("can identify subdoc", ()=>{
 				return check(contents["subdoc"](),"variant.subdoc")
+			})
+			
+			it("can identify embed subdoc", ()=>{
+				spyOn(DocxTemplate.OfficeDocument.prototype,"getRelOleObject")
+					.and
+					.returnValue("function hello(){}")
+				return check(contents["subdoc"]("", contents["script"]("rId7", "Word.Document.12")),"variant.subdoc")
+			})
+			
+			it("can identify script", ()=>{
+				spyOn(DocxTemplate.OfficeDocument.prototype,"getRelOleObject")
+					.and
+					.returnValue("hello()")
+				return check(contents["script"](),"variant.script")
 			})
 		})
 
@@ -140,6 +166,26 @@ describe("docx template models", function(){
 				return template(`${contents["for"]()}${contents["subdoc"]()}`).then(varDoc=>{
 					expect(varDoc.children[0].constructor.type).toBe("variant.for")
 					expect(varDoc.children[1].constructor.type).toBe("variant.subdoc")
+				})
+			})
+			
+			it("for(){ embed subdoc }", function(){
+				spyOn(DocxTemplate.OfficeDocument.prototype,"getRelOleObject")
+					.and
+					.returnValue("hello()")
+				return template(`${contents["for"]()}${contents["subdoc"]("", contents["script"]("rId7", "Word.Document.12"))}`).then(varDoc=>{
+					expect(varDoc.children[0].constructor.type).toBe("variant.for")
+					expect(varDoc.children[1].constructor.type).toBe("variant.subdoc")
+				})
+			})
+			
+			it("for(){ script }", function(){
+				spyOn(DocxTemplate.OfficeDocument.prototype,"getRelOleObject")
+					.and
+					.returnValue("hello()")
+				return template(`${contents["for"]()}${contents["script"]()}`).then(varDoc=>{
+					expect(varDoc.children[0].constructor.type).toBe("variant.for")
+					expect(varDoc.children[1].constructor.type).toBe("variant.script")
 				})
 			})
 			

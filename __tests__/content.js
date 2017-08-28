@@ -74,11 +74,11 @@ export default {
 				</w:p>
 			</w:sdtContent>
 		</w:sdt>`,
-	"subdoc":(a="policy")=>`
+	"script": (rId="rId7", type="Package", a="")=>`
 		<w:sdt>
 			<w:sdtPr>
-				<w:alias w:val="subdoc"/>
-				<w:tag w:val="subdoc(${a})"/>
+				<w:alias w:val="javascript"/>
+				<w:tag w:val="script(${a})"/>
 				<w:id w:val="922459404"/>
 				<w:placeholder>
 					<w:docPart w:val="DefaultPlaceholder_1082065158"/>
@@ -88,7 +88,29 @@ export default {
 			<w:sdtContent>
 				<w:p>
 					<w:r>
-						<w:t>subdoc</w:t>
+						<w:object w:dxaOrig="1479" w:dyaOrig="972">
+							<o:OLEObject Type="Embed" ProgID="${type}" r:id="${rId}"/>
+						</w:object>
+					</w:r>
+				</w:p>
+			</w:sdtContent>
+		</w:sdt>
+	`,
+	"subdoc":(a="policy",b)=>`
+		<w:sdt>
+			<w:sdtPr>
+				<w:alias w:val="subdoc"/>
+				<w:tag w:val="include(${a})"/>
+				<w:id w:val="922459404"/>
+				<w:placeholder>
+					<w:docPart w:val="DefaultPlaceholder_1082065158"/>
+				</w:placeholder>
+			</w:sdtPr>
+			<w:sdtEndPr/>
+			<w:sdtContent>
+				<w:p>
+					<w:r>
+						${b||'<w:t>subdoc</w:t>'}
 					</w:r>
 				</w:p>
 			</w:sdtContent>

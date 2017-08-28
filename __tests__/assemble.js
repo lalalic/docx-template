@@ -11,6 +11,7 @@ jest.mock("isomorphic-fetch", ()=>{
 	}
 })
 
+import fetch from "isomorphic-fetch"
 import docx4js from "docx4js"
 import DocxTemplate from "../src"
 import contents from "./content"
@@ -135,6 +136,21 @@ describe("assemble", function(){
 					expect(_for.assemble).toHaveBeenCalledTimes(3)
 					expect(_for.assembled).toHaveBeenCalledTimes(1)
 					expect(_if.assemble).toHaveBeenCalledTimes(3)
+				})
+			})
+		})
+		
+		it("script:function hello(){}",()=>{
+			spyOn(DocxTemplate.OfficeDocument.prototype,"getRelOleObject")
+				.and
+				.returnValue("function hello(){}")
+				
+			return template(contents.script()).then(varDoc=>{
+				let  _script=varDoc.children[0]
+				_script.assemble=jest.fn()
+				
+				return varDoc.assemble().then(staticDoc=>{
+					expect(_script.assemble).toHaveBeenCalledTimes(1)
 				})
 			})
 		})
@@ -349,6 +365,23 @@ describe("assemble", function(){
 					expect(subDoc.officeDocument.content.text()).toBe("raymond")
 				})
 		})
+		
+		it("embed subdoc", ()=>{
+			return fetch(contents.exp("${__.name}")).then(subdoc=>{
+				spyOn(DocxTemplate.OfficeDocument.prototype,"getRelOleObject")
+					.and
+					.returnValue(subdoc)
+					
+				return template(contents.subdoc("", contents["script"]("rId7", "Word.Document.12")))
+					.then(varDoc=>{
+						return varDoc.assemble({name:"raymond"})
+					})
+					.then(checkSubDoc)
+					.then(subDoc=>{
+						expect(subDoc.officeDocument.content.text()).toBe("raymond")
+					})
+			})
+		})
 
 		it("for(var i=0;i<count;i++){subdoc(policy)}",  ()=>{
 			return template(contents.for(contents.subdoc("__.policy"),"var i=0;i&lt;__.count;i++"))
@@ -434,6 +467,54 @@ describe("assemble", function(){
 					let all=["raymond0good","raymond1good","raymond2good"].filter(a=>!created.includes(a))
 					expect(all.length).toBe(0)
 				})
+		})
+	})
+	
+	describe("script", function(){
+		it("function hello(){}",()=>{
+			spyOn(DocxTemplate.OfficeDocument.prototype,"getRelOleObject")
+				.and
+				.returnValue(`
+					function hello(){
+						return "hello"
+					}
+				`)
+
+			return template(contents.script()+contents.exp("${hello(__.name)}")).then(varDoc=>{
+				return varDoc.assemble({name:"abc"})
+					.then(staticDoc=>expect(staticDoc.officeDocument.content.text()).toMatch("hello"))
+			})
+		})
+		
+		it("function hello(){} function trim(){}",()=>{
+			spyOn(DocxTemplate.OfficeDocument.prototype,"getRelOleObject")
+				.and
+				.returnValue(`
+					function hello(){
+						return "hello"
+					}
+					function trim(a){
+						return a.trim()
+					}
+				`)
+
+			return template(contents.script()+contents.exp("${hello(__.name)}")).then(varDoc=>{
+				return varDoc.assemble({name:"abc"})
+					.then(staticDoc=>expect(staticDoc.officeDocument.content.text()).toMatch("hello"))
+			})
+		})
+		
+		it("var vendor='docx-template';function hello(){}",()=>{
+			spyOn(DocxTemplate.OfficeDocument.prototype,"getRelOleObject")
+				.and
+				.returnValue(`
+					var vendor='docx-template';function hello(){return "hello"}
+				`)
+
+			return template(contents.script()+contents.exp("${hello(__.name)}")).then(varDoc=>{
+				return varDoc.assemble({name:"abc"})
+					.then(staticDoc=>expect(staticDoc.officeDocument.content.text()).toMatch("hello"))
+			})
 		})
 	})
 })

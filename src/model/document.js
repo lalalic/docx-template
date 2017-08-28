@@ -12,10 +12,13 @@ export default class Document{
 		this.children=children||[]
 	}
 
-	assemble(data, opt={clearWrap:true}){
+	assemble(data, opt){
 		try{
+			opt=Object.assign({
+				clearWrap:true
+			},opt)
 			let targetDoc=this.docx.clone()
-			return this.engine(targetDoc, data, this.variants, targetDoc.officeDocument.content, opt)
+			return this.engine(targetDoc, data,this.variants, targetDoc.officeDocument.content, opt)
 				.then(staticDoc=>{
 					if(!opt.clearWrap){
 						staticDoc.officeDocument.content(`[${ID}]`).removeAttr(ID)
