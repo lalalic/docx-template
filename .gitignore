@@ -4,3 +4,5 @@
 node_modules
 *.log
 test/**/*.html
+dist/docx-template.js
+
